@@ -33,7 +33,7 @@ Make sure all necessary prerequisites are in place. These include things like:
 Read through the xl kube workshop to gain a comprehensive understanding of how to install or upgrade Digital.ai Release or Release or Remote Runner on a kubernetes cluster.
 See:
 - [xl-kube-workshop](https://github.com/xebialabs/xl-kube-workshop)
-- [Helm chart documentation](https://github.com/xebialabs/xl-release-kubernetes-helm-chart/tree/23.3.x-maintenance) - the Release operator is managing Release helm chart on K8S cluster
+- [Helm chart documentation](https://github.com/digital-ai/release-helm-chart/tree/23.3.x-maintenance) - the Release operator is managing Release helm chart on K8S cluster
 :::
 
 This manual is for 23.3 and 24.1 versions (or above). 
