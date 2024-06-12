@@ -287,7 +287,7 @@ During upgrade for the question `Edit list of custom resource keys that will mig
 #### kubernetes/template/deployment.yaml
 
 - spec.template.spec.containers[0].image: myrepo_host/myrepo/kube-rbac-proxy:v0.8.0
-- spec.template.spec.containers[1].image: myrepo_host/myrepo/release-operator:{operator-imageTag-given-in-xl-cmd-question}
+- spec.template.spec.containers[1].image: myrepo_host/myrepo/release-operator:operator-imageTag-given-in-xl-cmd-question
 - spec.template.spec.imagePullSecrets[0].name: regcred (only for custom private image registry requiring authentication)
 
 #### kubernetes/template/postgresql-init-keycloak-db.yaml
