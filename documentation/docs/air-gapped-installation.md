@@ -40,7 +40,7 @@ You can see from here that `xl kube` needs blueprints from location [https://dis
 
 You need to download and put all files from that location to the server where you will execute `xl kube`.
 
-:::TIP
+:::tip
 You can download zipped version of the xl-op-blueprints from here: 
 [https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/](https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/)
 
