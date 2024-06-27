@@ -3,20 +3,20 @@ const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
 
 module.exports = {
-  title: 'Release Kubernetes Helm Chart',
+  title: 'Digital.ai Release Kubernetes Helm Chart',
   tagline: '',
-  url: 'https://xebialabs.github.io',
-  baseUrl: '/xl-release-kubernetes-helm-chart/',
+  url: 'https://digital-ai.github.io',
+  baseUrl: '/release-helm-chart/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/digital_ai_deploy.svg',
   organizationName: 'Digital.ai',
-  projectName: 'xl-release-kubernetes-helm-chart',
+  projectName: 'release-helm-chart',
   themeConfig: {
     navbar: {
       title: 'Release Kubernetes Helm Chart',
       logo: {
-        alt: 'Release Kubernetes Helm Chart Digital.ai',
+        alt: 'Digital.ai Release Kubernetes Helm Chart',
         src: 'img/digital_ai_deploy.svg',
       },
       items: [
@@ -28,7 +28,7 @@ module.exports = {
         },
 
         {
-          href: 'https://github.com/xebialabs/xl-release-kubernetes-helm-chart',
+          href: 'https://github.com/digital-ai/release-helm-chart',
           label: 'GitHub',
           position: 'right',
         }
@@ -46,7 +46,7 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/xebialabs/xl-release-kubernetes-helm-chart',
+              href: 'https://github.com/digital-ai/release-helm-chart',
             },
           ],
         },
