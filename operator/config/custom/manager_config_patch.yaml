@@ -14,8 +14,8 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: RELATED_IMAGE_RELEASE
-              value: docker.io/xebialabsunsupported/xl-release:${APP_VERSION}
+              value: docker.io/${DOCKER_HUB_REPOSITORY}/xl-release:${APP_VERSION}
             - name: RELATED_IMAGE_RELEASE_VOLUME_PERMISSIONS
-              value: docker.io/xebialabsunsupported/xl-release:${APP_VERSION}
+              value: docker.io/${DOCKER_HUB_REPOSITORY}/xl-release:${APP_VERSION}
             - name: RELATED_IMAGE_RELEASE_BUSY_BOX
-              value: docker.io/xebialabsunsupported/xl-release:${APP_VERSION}
+              value: docker.io/${DOCKER_HUB_REPOSITORY}/xl-release:${APP_VERSION}
