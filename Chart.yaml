@@ -3,7 +3,7 @@ appVersion: 24.3.0
 description: A Helm chart for Digital.ai Release
 name: digitalai-release
 version: 24.3.0
-kubeVersion: ">= 1.23.0-0 < 1.30.0-0"
+kubeVersion: ">= 1.23.0-0 < 1.31.0-0"
 sources:
   - https://github.com/digital-ai/release-helm-chart
   - https://github.com/xebialabs/xl-release
@@ -25,21 +25,21 @@ dependencies:
     version: 2.x.x
 
   - name: haproxy-ingress
-    version: 0.14.6
+    version: 0.14.7
     repository: "https://haproxy-ingress.github.io/charts"
     condition: haproxy-ingress.install
 
   - name: nginx-ingress-controller
-    version: 11.2.1
+    version: 11.3.10
     repository: "https://charts.bitnami.com/bitnami"
     condition: nginx-ingress-controller.install
 
   - name: postgresql
-    version: 15.4.0
+    version: 15.5.14
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.install
 
   - name: rabbitmq
-    version: 14.3.0
+    version: 14.4.6
     repository: "https://charts.bitnami.com/bitnami"
     condition: rabbitmq.install

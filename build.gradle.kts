@@ -180,7 +180,7 @@ tasks {
 
     register<Download>("installKustomize") {
         group = "kustomize"
-        src("https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$kustomizeVersion/kustomize_v5.0.1_${os}_$arch.tar.gz")
+        src("https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$kustomizeVersion/kustomize_v${kustomizeVersion}_${os}_$arch.tar.gz")
         dest(kustomizeDir.file("kustomize.tar.gz").getAsFile())
         doLast {
             copy {
