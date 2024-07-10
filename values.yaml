@@ -1648,7 +1648,7 @@ postgresql:
   install: true
   ## @param postgresql.image.tag PostgreSQL image tag (immutable tags are recommended)
   image:
-    tag: 16.1.0-debian-11-r27
+    tag: 15.6.0-debian-12-r7
   ## @section PostgreSQL Primary parameters
   ##
 
@@ -1755,7 +1755,7 @@ rabbitmq:
   install: true
   ## @param rabbitmq.image.tag RabbitMQ image tag (immutable tags are recommended)
   image:
-    tag: 3.13.2-debian-12-r4
+    tag: 3.12.13-debian-12-r2
   ## Clustering settings
   ##
   clustering:
