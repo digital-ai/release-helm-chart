@@ -45,7 +45,7 @@ Check [Installing the opm CLI](https://docs.openshift.com/container-platform/4.1
 
 ```shell
 opm index add \
-  --bundles docker.io/xebialabsunsupported/release-operator-bundle:24.3.0-beta.2 \
+  --bundles docker.io/xebialabsunsupported/release-operator-bundle:24.3.0-beta.3 \
   --tag docker.io/xebialabsunsupported/release-operator-index:24.3 \
   --generate
 ```
