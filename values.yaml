@@ -1661,13 +1661,6 @@ postgresql:
       ## NOTE: This can work along `primary.initdb.scripts` or `primary.initdb.scriptsConfigMap`
       ##
       scriptsSecret: '{{ include "postgresql.v1.primary.fullname" . }}-release'
-    ## Container Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-    ## @param postgresql.primary.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
-    ## Added explicitly as null to avoid validation issues with default value {} in the chart values
-    ##
-    containerSecurityContext:
-      seLinuxOptions: null
     ## @param postgresql.primary.extendedConfiguration Extended PostgreSQL Primary configuration (appended to main or default configuration)
     ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#allow-settings-to-be-loaded-from-files-other-than-the-default-postgresqlconf
     ##
@@ -1758,7 +1751,7 @@ postgresql:
     ## Added explicitly as null to avoid validation issues with default value {} in the chart values
     ##
     containerSecurityContext:
-      seLinuxOptions: null      
+      seLinuxOptions: null
 
 ## @section RabbitMQ
 ##
