@@ -1744,14 +1744,6 @@ postgresql:
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       tag: 12-debian-12-r21
-    ## Init container' Security Context
-    ## Note: the chown of the data folder is done to postgresql.containerSecurityContext.runAsUser
-    ## and not the below postgresql.volumePermissions.containerSecurityContext.runAsUser
-    ## @param postgresql.volumePermissions.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
-    ## Added explicitly as null to avoid validation issues with default value {} in the chart values
-    ##
-    containerSecurityContext:
-      seLinuxOptions: null
 
 ## @section RabbitMQ
 ##
