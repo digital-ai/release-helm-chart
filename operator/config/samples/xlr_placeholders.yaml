@@ -116,6 +116,8 @@ spec:
         enabled: true
     volumePermissions:
       enabled: true
+      containerSecurityContext:
+        seLinuxOptions: null
   rabbitmq:
     install: true
     persistence:
