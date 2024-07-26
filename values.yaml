@@ -42,7 +42,7 @@ k8sSetup:
 license:
 ## @param licenseAcceptEula Accept EULA, in case of missing license, it will generate temporary license.
 ##
-licenseAcceptEula: false
+licenseAcceptEula: true
 ## @param generateXlConfig Generate configuration from environment parameters passed, and volumes mounted with custom changes. If set to false, a default config will be used and all environment variables and volumes added will be ignored.
 ##
 generateXlConfig: true
@@ -421,7 +421,7 @@ external:
 
 keystore:
   ## @param keystore.passphrase Set passphrase for the keystore
-  passphrase:
+  passphrase: test123
   ## @param keystore.keystore Use repository-keystore.jceks files content ecoded with base64
   # https://docs.xebialabs.com/v.9.8/release/how-to/update-the-xl-release-digital-certificate/#view-the-certificate
   # Convert repository-keystore.jceks files content to base64
@@ -1525,6 +1525,7 @@ volumePermissions:
   ## @skip volumePermissions.containerSecurityContext.seccompProfile
   ##
   containerSecurityContext:
+    seLinuxOptions: null
     runAsUser: 0
     runAsGroup: 0
     runAsNonRoot: false
@@ -1744,6 +1745,8 @@ postgresql:
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       tag: 12-debian-12-r21
+    containerSecurityContext:
+      seLinuxOptions: null
 
 ## @section RabbitMQ
 ##
