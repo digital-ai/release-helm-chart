@@ -43,7 +43,7 @@ spec:
   podSecurityContext:
     enabled: true
   containerSecurityContext:
-    enabled: true    
+    enabled: true
   securityContextConstraints:
     enabled: true
   volumePermissions:
@@ -66,14 +66,20 @@ spec:
       persistence:
         size: 1Gi
         storageClass: ''
+      resourcesPreset: "small"
       podSecurityContext:
-        enabled: true
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+        fsGroup: null
       containerSecurityContext:
-        enabled: true
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
       securityContextConstraints:
-        enabled: true
+        enabled: false
     volumePermissions:
-      enabled: true
+      enabled: false
   rabbitmq:
     install: true
     persistence:
@@ -160,6 +166,7 @@ spec:
       persistence:
         size: 1Gi
         storageClass: ''
+      resourcesPreset: "small"
       podSecurityContext:
         enabled: false
         runAsUser: null
