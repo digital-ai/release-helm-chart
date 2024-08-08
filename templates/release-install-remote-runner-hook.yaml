@@ -1,6 +1,6 @@
 {{- if and .Values.hooks.installReleaseRunner.enabled }}
 {{- $name := include "common.tplvalues.render" ( dict "value" .Values.hooks.installReleaseRunner.name "context" $ ) -}}
-{{- $rrExists := (lookup "v1" "statefulset" (include "common.names.namespace" . | quote) ".Values.hooks.installReleaseRunner.releaseName") | default "" -}}
+{{- $rrExists := ((lookup "apps/v1" "StatefulSet" (include "common.names.namespace" .) (.Values.hooks.installReleaseRunner.releaseName | default $name)) | default dict) -}}
 {{- if not $rrExists }}
 ---
 kind: Role
@@ -102,6 +102,10 @@ spec:
           {{- end }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.hooks.installReleaseRunner.installCommand "context" $) | nindent 12 }}
       {{- if .Values.hooks.installReleaseRunner.answersSecret }}
+          env:
+          {{- if .Values.hooks.installReleaseRunner.extraEnvVars }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.hooks.installReleaseRunner.extraEnvVars "context" $) | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: answers-volume
               readOnly: true
