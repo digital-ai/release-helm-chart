@@ -109,7 +109,7 @@ Get the password secret.
     {{- if .Values.auth.adminPassword -}}
         {{ .Values.auth.adminPassword }}
     {{- else -}}
-        {{- $secretObj := (lookup "v1" "Secret" ( include "common.names.namespace" . ) (include "common.names.fullname" .)) | default dict }}
+        {{- $secretObj := (lookup "apps/v1" "Secret" ( include "common.names.namespace" . ) (include "common.names.fullname" .)) | default dict }}
         {{- $secretData := (get $secretObj "data") | default dict }}
         {{- (get $secretData "releasePassword") | b64dec | default (randAlphaNum 10) }}
     {{- end -}}
@@ -542,9 +542,9 @@ Params:
 */}}
 {{- define "secrets.exists" -}}
 {{- $namespaceName := include "common.names.namespace" .context -}}
-{{- $namespace := (lookup "v1" "ServicAaccount" $namespaceName "") -}}
+{{- $namespace := (lookup "apps/v1" "ServicAaccount" $namespaceName "") -}}
 {{- if $namespace -}}
-{{- $secret := (lookup "v1" "Secret" $namespaceName .secret) -}}
+{{- $secret := (lookup "apps/v1" "Secret" $namespaceName .secret) -}}
 {{- if $secret -}}
 true
 {{- else -}}
