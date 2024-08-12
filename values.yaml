@@ -267,10 +267,11 @@ hooks:
           STOREPASS="{{- .Values.ssl.keystorePassword -}}"
           KEYPASS="{{- .Values.ssl.keystoreKeypassword -}}"
           KEYTYPE="{{- .Values.ssl.keystoreType -}}"
-          keytool -genkey -keyalg RSA -alias dai-release -keystore conf/keystore.$KEYTYPE -validity 365 -keysize 2048 -storepass "$STOREPASS" -storetype "$KEYTYPE" -keypass "$KEYPASS" \
+          STORETYPE="{{- if eq .Values.ssl.keystoreType "p12" -}}pkcs12{{- else if eq .Values.ssl.keystoreType "jks" -}}jks{{- end -}}"
+          keytool -genkey -keyalg RSA -alias dai-release -keystore conf/keystore.$KEYTYPE -validity 365 -keysize 2048 -storepass "$STOREPASS" -storetype "$STORETYPE" -keypass "$KEYPASS" \
             -dname "CN=$HOSTNAME,OU=,O=Digital.ai Release,L=,ST=,C=" \
             -ext "SAN=DNS:{{- include "common.names.fullname" . -}}.local"
-          keytool -export -alias dai-release -keystore conf/keystore.$KEYTYPE -rfc -file conf/public.cert -storepass "$STOREPASS" -storetype "$KEYTYPE" -keypass "$KEYPASS"
+          keytool -export -alias dai-release -keystore conf/keystore.$KEYTYPE -rfc -file conf/public.cert -storepass "$STOREPASS" -storetype "$STORETYPE" -keypass "$KEYPASS"
 
       ## @extra hooks.genSelfSigned.configuration.bin_install-self-signed The configuration of the script for setting up self-signed key secret
       ## @param hooks.genSelfSigned.configuration.bin_install-self-signed.path The path to the script for setting up self-signed key secret
@@ -384,8 +385,8 @@ ssl:
   keystorePassword:
   ## @param ssl.keystoreKeypassword Keystore key password with SSL key.
   keystoreKeypassword:
-  ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
-  keystoreType: pkcs12
+  ## @param ssl.keystoreType Keystore type, options p12 or jks.
+  keystoreType: p12
   ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
   ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
   ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
