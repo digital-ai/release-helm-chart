@@ -178,7 +178,10 @@ hooks:
           #!/bin/bash
 
           FILE_PATH="/opt/xebialabs/xl-release-server/conf/xl-release-license.lic"
-          kubectl create secret generic {{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.getLicense.name "context" $ ) }} --from-file=$FILE_PATH
+          kubectl create secret generic {{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.getLicense.name "context" $ ) }} \
+            --from-file=$FILE_PATH \
+            --dry-run=client \
+            -o yaml | kubectl apply -f -
 
   genSelfSigned:
     ## @param hooks.genSelfSigned.enabled set to true to support self-signed ket auto generation by using helm hook
@@ -278,7 +281,9 @@ hooks:
           kubectl create secret generic {{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.genSelfSigned.name "context" $ ) }} \
             --from-file=$KEYSTORE_FILE_PATH \
             --from-file=$CERT_FILE_PATH \
-            --from-literal=host={{- include "release.hostname" . -}}
+            --from-literal=host={{- include "release.hostname" . -}} \
+            --dry-run=client \
+            -o yaml | kubectl apply -f -
 
   installReleaseRunner:
     ## @param hooks.installReleaseRunner.enabled set to true to support installation of the Remote Runner after Release installation
