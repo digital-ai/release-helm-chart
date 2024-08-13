@@ -542,7 +542,7 @@ Params:
 */}}
 {{- define "secrets.exists" -}}
 {{- $namespaceName := include "common.names.namespace" .context -}}
-{{- $namespace := (lookup "apps/v1" "ServicAaccount" $namespaceName "") -}}
+{{- $namespace := (lookup "apps/v1" "ServiceAccount" $namespaceName "") -}}
 {{- if $namespace -}}
 {{- $secret := (lookup "apps/v1" "Secret" $namespaceName .secret) -}}
 {{- if $secret -}}
