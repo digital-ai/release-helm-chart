@@ -1,4 +1,4 @@
 image:
     repository: xebialabsunsupported/xl-release
-    tag: 24.1.2-rc.1-redhat
+    tag: 24.1.6
     pullPolicy: IfNotPresent

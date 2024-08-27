@@ -1449,9 +1449,11 @@ defaultInitContainers:
     limits:
       cpu: "150m"
       memory: "192Mi"
+      ephemeral-storage: "2Gi"
     requests:
       cpu: "100m"
       memory: "128Mi"
+      ephemeral-storage: "50Mi"
 ## @param initContainers Add init containers to the Release pod
 ## Example:
 ## initContainers:
@@ -1531,9 +1533,11 @@ volumePermissions:
     limits:
       cpu: "150m"
       memory: "192Mi"
+      ephemeral-storage: "2Gi"
     requests:
       cpu: "100m"
       memory: "128Mi"
+      ephemeral-storage: "50Mi"
   ## Init container' Security Context
   ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
   ## and not the below volumePermissions.containerSecurityContext.runAsUser

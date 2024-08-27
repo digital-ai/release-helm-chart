@@ -138,9 +138,6 @@ spec:
         - name: volume-permissions
           image: {{ include "common.images.image" (dict "imageRoot" .Values.volumePermissions.image "global" .Values.global "context" .) }}
           imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
           command:
             - /bin/bash
           args:

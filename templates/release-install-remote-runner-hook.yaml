@@ -93,6 +93,9 @@ spec:
               {{- else }}
               value: {{ .Values.service.ports.releaseHttp | quote }}
               {{- end }}
+          {{- if .Values.defaultInitContainers.resources }}
+          resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
+          {{- end }}
       containers:
         - name: install-runner-job
           image: {{ include "common.images.image" (dict "imageRoot" .Values.hooks.installReleaseRunner.image "global" .Values.global "context" .) }}
@@ -111,6 +114,9 @@ spec:
               readOnly: true
               mountPath: /opt/xebialabs/xl-client/generated_answers.yaml
               subPath: generated_answers.yaml
+          {{- if .Values.defaultInitContainers.resources }}
+          resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
+          {{- end }}
       volumes:
         - name: answers-volume
           secret:
