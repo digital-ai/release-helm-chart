@@ -138,9 +138,6 @@ spec:
         - name: volume-permissions
           image: {{ include "common.images.image" (dict "imageRoot" .Values.volumePermissions.image "global" .Values.global "context" .) }}
           imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
           command:
             - /bin/bash
           args:
@@ -152,6 +149,11 @@ spec:
           resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
+          {{- range $path := .Values.persistence.emptyDirPaths }}
+          - name: empty-dir
+            mountPath: {{ $path }}
+            subPath: {{ regexFind "[^/]+$" $path }}
+          {{- end }}
           {{- range $path := .Values.persistence.paths }}
             - name: data
               mountPath: {{ $path }}
@@ -399,6 +401,11 @@ spec:
               subPath: {{ include "secrets.key" (dict "secretRef" .Values.truststore.truststore "default" "truststore" "context" $) }}
               readOnly: true
             {{- end }}
+            {{- range $path := .Values.persistence.emptyDirPaths }}
+            - name: empty-dir
+              mountPath: {{ $path }}
+              subPath: {{ regexFind "[^/]+$" $path }}
+            {{- end }}
             {{- range $path := .Values.persistence.paths }}
             - name: data
               mountPath: {{ $path }}
@@ -455,6 +462,10 @@ spec:
         {{- end }}
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $)  | nindent 8 }}
+        {{- end }}
+        {{- if .Values.persistence.emptyDirPaths }}
+        - name: empty-dir
+          emptyDir: {}
         {{- end }}
         {{- if not .Values.persistence.enabled }}
         - name: data

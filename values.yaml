@@ -139,6 +139,7 @@ hooks:
       enabled: true
       runAsNonRoot: true
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
         - ALL
@@ -243,6 +244,7 @@ hooks:
       enabled: true
       runAsNonRoot: true
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
         - ALL
@@ -361,6 +363,7 @@ hooks:
       enabled: true
       runAsNonRoot: true
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
         - ALL
@@ -1182,6 +1185,8 @@ persistence:
   ## @param persistence.paths mounted paths for the Release
   paths:
     - /opt/xebialabs/xl-release-server/reports
+  emptyDirPaths:
+    - /tmp
 
 ## @section Exposure parameters
 ##
@@ -1393,6 +1398,7 @@ containerSecurityContext:
   enabled: true
   runAsNonRoot: true
   allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
   capabilities:
     drop:
     - ALL
@@ -1449,9 +1455,11 @@ defaultInitContainers:
     limits:
       cpu: "150m"
       memory: "192Mi"
+      ephemeral-storage: "2Gi"
     requests:
       cpu: "100m"
       memory: "128Mi"
+      ephemeral-storage: "50Mi"
 ## @param initContainers Add init containers to the Release pod
 ## Example:
 ## initContainers:
@@ -1531,9 +1539,11 @@ volumePermissions:
     limits:
       cpu: "150m"
       memory: "192Mi"
+      ephemeral-storage: "2Gi"
     requests:
       cpu: "100m"
       memory: "128Mi"
+      ephemeral-storage: "50Mi"
   ## Init container' Security Context
   ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
   ## and not the below volumePermissions.containerSecurityContext.runAsUser
@@ -1544,6 +1554,8 @@ volumePermissions:
   ## @skip volumePermissions.containerSecurityContext.seccompProfile
   ##
   containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     runAsUser: 0
     runAsGroup: 0
     runAsNonRoot: false
@@ -1785,6 +1797,15 @@ postgresql:
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       tag: 12-debian-12-r24
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      seLinuxOptions: {}
+      runAsUser: 0
+      runAsGroup: 0
+      runAsNonRoot: false
+      seccompProfile:
+        type: RuntimeDefault
 
 ## @section RabbitMQ
 ##
@@ -1879,6 +1900,7 @@ rabbitmq:
   ## @skip rabbitmq.containerSecurityContext.seccompProfile
   containerSecurityContext:
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
       - ALL
@@ -1923,6 +1945,8 @@ rabbitmq:
     ## @extra rabbitmq.volumePermissions.containerSecurityContext.seccompProfile Set volume permissions init container's Security Context seccompProfile
     ## @skip rabbitmq.volumePermissions.containerSecurityContext.seccompProfile
     containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       runAsUser: 0
       runAsGroup: 0
       runAsNonRoot: false
