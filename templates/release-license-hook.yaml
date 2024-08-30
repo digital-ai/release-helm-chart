@@ -116,6 +116,9 @@ spec:
               mountPath: /opt/xebialabs/xl-release-server/{{ $v.path }}
               subPath: {{ $v.path }}
             {{- end }}
+          {{- if .Values.defaultInitContainers.resources }}
+          resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
+          {{- end }}
       containers:
         - name: eula-install-license-job
           image: {{ include "common.images.image" (dict "imageRoot" .Values.hooks.getLicense.image "global" .Values.global "context" .) }}
@@ -132,6 +135,9 @@ spec:
               mountPath: /opt/xebialabs/xl-release-server/{{ $v.path }}
               subPath: {{ $v.path }}
             {{- end }}
+          {{- if .Values.defaultInitContainers.resources }}
+          resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
+          {{- end }}
       volumes:
         - name: shared-data
           emptyDir: {}

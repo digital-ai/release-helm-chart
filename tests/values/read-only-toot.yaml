@@ -1,0 +1,90 @@
+hooks:
+  getLicense:
+    containerSecurityContext:
+      enabled: true
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  # genSelfSigned:
+  #   containerSecurityContext:
+  #     enabled: true
+  #     runAsNonRoot: true
+  #     allowPrivilegeEscalation: false
+  #     readOnlyRootFilesystem: true
+  #     capabilities:
+  #       drop:
+  #       - ALL
+  #     seccompProfile:
+  #       type: RuntimeDefault
+  # installReleaseRunner:
+  #   containerSecurityContext:
+  #     enabled: true
+  #     runAsNonRoot: true
+  #     allowPrivilegeEscalation: false
+  #     readOnlyRootFilesystem: true
+  #     capabilities:
+  #       drop:
+  #       - ALL
+  #     seccompProfile:
+  #       type: RuntimeDefault
+extraVolumes:
+- name: empty-dir
+  emptyDir: {}
+extraVolumeMounts:
+- name: empty-dir
+  mountPath: /tmp
+  subPath: tmp-dir
+containerSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+# volumePermissions:
+#   enabled: true
+#   containerSecurityContext:
+#     allowPrivilegeEscalation: false
+#     readOnlyRootFilesystem: true
+#     runAsUser: 0
+#     runAsGroup: 0
+#     runAsNonRoot: false
+#     seccompProfile:
+#       type: RuntimeDefault
+postgresql:
+  volumePermissions:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      seLinuxOptions: {}
+      runAsUser: 0
+      runAsGroup: 0
+      runAsNonRoot: false
+      seccompProfile:
+        type: RuntimeDefault
+rabbitmq:
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  volumePermissions:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsUser: 0
+      runAsGroup: 0
+      runAsNonRoot: false
+      seccompProfile:
+        type: RuntimeDefault
