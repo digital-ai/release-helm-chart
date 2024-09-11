@@ -1221,6 +1221,7 @@ persistence:
   paths:
     - /opt/xebialabs/xl-release-server/reports
   emptyDirPaths:
+    - /opt/xebialabs/xl-release-server/cache
     - /opt/xebialabs/xl-release-server/conf
     - /opt/xebialabs/xl-release-server/driver/jdbc
     - /opt/xebialabs/xl-release-server/driver/mq
