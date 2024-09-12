@@ -123,7 +123,7 @@ spec:
       securityContextConstraints:
         enabled: false
     volumePermissions:
-      enabled: true
+      enabled: false
   rabbitmq:
     install: true
     persistence:

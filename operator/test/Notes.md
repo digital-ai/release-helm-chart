@@ -105,6 +105,12 @@ spec:
       enabled: false
 ```
 
+If SCC is required, it must be managed manually. The necessary permissions for accessing SecurityContextConstraints must be granted when SCC is enabled; otherwise, the following error will occur:
+
+```bash
+securitycontextconstraints.security.openshift.io \"dair-doc-digitalai-release-privileged\" is forbidden: User \"system:serviceaccount:openshift-operators:xlr-controller-manager\" cannot get resource \"securitycontextconstraints\" in API group \"security.openshift.io\" at the cluster scope"
+```
+
 #### Configuration Details
 
 The sample configuration uses:
