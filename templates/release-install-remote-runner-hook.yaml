@@ -19,7 +19,13 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["list", "get"]
+    verbs: ["create", "update", "patch", "delete", "list", "get"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
 ---
 kind: RoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
