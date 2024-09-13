@@ -19,7 +19,13 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["list", "get"]
+    verbs: ["create", "update", "patch", "delete", "list", "get"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
 ---
 kind: RoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
@@ -103,24 +109,41 @@ spec:
           {{- if .Values.hooks.installReleaseRunner.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.hooks.installReleaseRunner.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.hooks.installReleaseRunner.installCommand "context" $) | nindent 12 }}
-      {{- if .Values.hooks.installReleaseRunner.answersSecret }}
+          command:
+            - /bin/sh
+          args:
+            - -ec
+            - |
+              {{- include "common.tplvalues.render" (dict "value" .Values.hooks.installReleaseRunner.installCommand "context" $) | nindent 14 }}
+          {{- if .Values.hooks.installReleaseRunner.answersSecret }}
           env:
           {{- if .Values.hooks.installReleaseRunner.extraEnvVars }}
           {{- include "common.tplvalues.render" (dict "value" .Values.hooks.installReleaseRunner.extraEnvVars "context" $) | nindent 12 }}
           {{- end }}
+          {{- end }}
           volumeMounts:
+            {{- if .Values.hooks.installReleaseRunner.answersSecret }}
             - name: answers-volume
               readOnly: true
               mountPath: /opt/xebialabs/xl-client/generated_answers.yaml
               subPath: generated_answers.yaml
+            {{- end }}
+            - name: empty-dir
+              mountPath: /opt/xebialabs/.xebialabs
+              subPath: xebialabs-dir
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
           {{- if .Values.defaultInitContainers.resources }}
           resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if .Values.hooks.installReleaseRunner.answersSecret }}
         - name: answers-volume
           secret:
             secretName: {{ .Values.hooks.installReleaseRunner.answersSecret }}
-      {{- end }}
+        {{- end }}
+        - name: empty-dir
+          emptyDir: {}
 {{- end }}
 {{- end }}
