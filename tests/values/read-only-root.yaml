@@ -64,7 +64,7 @@ postgresql:
     containerSecurityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
-      seLinuxOptions: {}
+      seLinuxOptions: null
       runAsUser: 0
       runAsGroup: 0
       runAsNonRoot: false
