@@ -311,15 +311,12 @@ hooks:
     ## @param hooks.installReleaseRunner.answersSecret The secret that will be used during Release Runner installation
     answersSecret: ""
     ## @param hooks.installReleaseRunner.installCommand The command for Release Runner installation
-    installCommand:
-      - /opt/xebialabs/xl-client/xl
-      - kube
-      - upgrade
-      - --skip-context-check
-      - --local-repo
-      - /opt/xebialabs/xl-op-blueprints
-      - --answers
-      - /opt/xebialabs/xl-client/generated_answers.yaml
+    installCommand: |
+      cd /tmp; 
+      /opt/xebialabs/xl-client/xl kube upgrade \
+        --skip-context-check \
+        --local-repo /opt/xebialabs/xl-op-blueprints \
+        --answers /opt/xebialabs/xl-client/generated_answers.yaml
 
     ## @param hooks.installReleaseRunner.image.registry getLicense hook container image registry
     ## @param hooks.installReleaseRunner.image.repository getLicense hook container image repository
@@ -1706,6 +1703,12 @@ haproxy-ingress:
       ## @param haproxy-ingress.controller.service.type Kubernetes Service type for Controller
       ##
       type: LoadBalancer
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
 
 ## @section Ingress Nginx
 ##
