@@ -1703,12 +1703,25 @@ haproxy-ingress:
       ## @param haproxy-ingress.controller.service.type Kubernetes Service type for Controller
       ##
       type: LoadBalancer
+    legacySecurityContext: false
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
-      runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
+    extraVolumes: 
+    - name: empty-dir
+      emptyDir: {}
+    extraVolumeMounts: 
+    - name: empty-dir
+      mountPath: /etc/haproxy
+      subPath: haproxy
+    - name: empty-dir
+      mountPath: /var/lib/haproxy
+      subPath: haproxy
+    - name: empty-dir
+      mountPath: /var/run/haproxy
+      subPath: haproxy
 
 ## @section Ingress Nginx
 ##
