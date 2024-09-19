@@ -81,8 +81,6 @@ spec:
   containerSecurityContext:
     runAsUser: null
     runAsGroup: null
-  securityContextConstraints:
-    enabled: false
   volumePermissions:
     enabled: false
   diagnosticMode:
@@ -120,8 +118,6 @@ spec:
         enabled: false
         runAsUser: null
         runAsGroup: null
-      securityContextConstraints:
-        enabled: false
     volumePermissions:
       enabled: false
   rabbitmq:
@@ -139,7 +135,5 @@ spec:
       enabled: false
       runAsUser: null
       runAsGroup: null
-    securityContextConstraints:
-      enabled: false
     volumePermissions:
       enabled: false

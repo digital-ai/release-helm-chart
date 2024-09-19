@@ -1412,10 +1412,6 @@ containerSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-## @param securityContextConstraints.enabled Enabled SecurityContextConstraints for Release (only on Openshift)
-securityContextConstraints:
-  enabled: true
-
 ## Release containers' resource requests and limits
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 ## We usually recommend not to specify default resources and to leave this as a conscious
@@ -1762,10 +1758,6 @@ postgresql:
       ##
       type: ClusterIP
 
-    ## @param postgresql.primary.securityContextConstraints.enabled Enabled SecurityContextConstraints for Postgresql (only on Openshift)
-    securityContextConstraints:
-      enabled: true
-
   ## @section Postgresql Authentication parameters
   ##
 
@@ -1912,10 +1904,6 @@ rabbitmq:
       - ALL
     seccompProfile:
       type: RuntimeDefault
-
-  ## @param rabbitmq.securityContextConstraints.enabled Enabled SecurityContextConstraints for Rabbitmq (only on Openshift)
-  securityContextConstraints:
-    enabled: true
 
   ## @section RabbitMQ Exposure parameters
   ##

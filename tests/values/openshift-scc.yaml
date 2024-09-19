@@ -5,8 +5,6 @@ podSecurityContext:
 containerSecurityContext:
   runAsUser: null
   runAsGroup: null
-securityContextConstraints:
-  enabled: false
 volumePermissions:
   enabled: false
 postgresql:
@@ -21,8 +19,6 @@ postgresql:
       enabled: false
       runAsUser: null
       runAsGroup: null
-    securityContextConstraints:
-      enabled: false
   volumePermissions:
     enabled: false
 rabbitmq:
@@ -36,7 +32,5 @@ rabbitmq:
     enabled: false
     runAsUser: null
     runAsGroup: null
-  securityContextConstraints:
-    enabled: false
   volumePermissions:
     enabled: false

@@ -455,7 +455,6 @@ kubectl delete namespace digitalai
 | `containerSecurityContext.allowPrivilegeEscalation` | Set Release container's Security Context allowPrivilegeEscalation                                                        | `false`         |
 | `containerSecurityContext.capabilities`             | Set Release container's Security Context capabilities                                                                    |                 |
 | `containerSecurityContext.seccompProfile`           | Set Release container's Security Context seccompProfile                                                                  |                 |
-| `securityContextConstraints.enabled`                | Enabled SecurityContextConstraints for Release (only on Openshift)                                                       | `true`          |
 | `resources.limits`                                  | The resources limits for Release containers                                                                              | `{}`            |
 | `resources.requests`                                | The requested resources for Release containers                                                                           | `{}`            |
 | `health.enabled`                                    | Enable probes                                                                                                            | `true`          |
@@ -552,7 +551,6 @@ kubectl delete namespace digitalai
 | `postgresql.primary.resources.requests.cpu`             | The requested cpu for the PostgreSQL Primary containers                                 | `250m`                                                     |
 | `postgresql.primary.service.ports.postgresql`           | PostgreSQL service port                                                                 | `5432`                                                     |
 | `postgresql.primary.service.type`                       | Kubernetes Service type                                                                 | `ClusterIP`                                                |
-| `postgresql.primary.securityContextConstraints.enabled` | Enabled SecurityContextConstraints for Postgresql (only on Openshift)                   | `true`                                                     |
 
 ### Postgresql Authentication parameters
 
@@ -598,7 +596,6 @@ kubectl delete namespace digitalai
 | `rabbitmq.containerSecurityContext.allowPrivilegeEscalation` | Set volume permissions init container's Security Context allowPrivilegeEscalation | `false`             |
 | `rabbitmq.containerSecurityContext.capabilities`             | Set volume permissions init container's Security Context capabilities             |                     |
 | `rabbitmq.containerSecurityContext.seccompProfile`           | Set volume permissions init container's Security Context seccompProfile           |                     |
-| `rabbitmq.securityContextConstraints.enabled`                | Enabled SecurityContextConstraints for Rabbitmq (only on Openshift)               | `true`              |
 
 ### RabbitMQ Exposure parameters
 
