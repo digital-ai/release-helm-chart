@@ -127,5 +127,4 @@ It is used for managing following resources:
 
 For the openshift variant of the operator following additional resources are managed:
 - poddisruptionbudgets
-- securitycontextconstraints
 - and all resources in the route.openshift.io API group.
