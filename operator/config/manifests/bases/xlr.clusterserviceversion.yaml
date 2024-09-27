@@ -135,7 +135,7 @@ spec:
         containerSecurityContext:
           enabled: false
           runAsUser: null
-          runAsGroup: null\
+          runAsGroup: null
         volumePermissions:
           enabled: false
     ```
