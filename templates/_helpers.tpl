@@ -518,6 +518,18 @@ valueFrom:
     {{- end -}}
 {{- end -}}
 
+{{- define "render.value-if-not-secret-binary" -}}
+    {{- if .value -}}
+        {{- if kindIs "string" .value -}}
+            {{ .key }}: {{ .value | b64dec | b64enc | b64enc | quote }}
+        {{- end -}}
+    {{- else -}}
+      {{- if .default -}}
+        {{ .key }}: {{ .default | b64dec | b64enc | b64enc | quote }}
+      {{- end -}}
+    {{- end -}}
+{{- end -}}
+
 {{/*
 Returns whether a previous generated secret already exists.
 On --dry-run this is always returning true (done by checking if release namespace exists)
