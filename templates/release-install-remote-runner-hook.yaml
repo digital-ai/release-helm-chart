@@ -71,9 +71,6 @@ spec:
         {{- end }}
     spec:
       restartPolicy: Never
-      {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
-      {{- end }}
       {{- include "release.installReleaseRunner.imagePullSecrets" . | nindent 6 }}
       initContainers:
         - name: wait-for-release
@@ -130,10 +127,13 @@ spec:
             {{- end }}
             - name: empty-dir
               mountPath: /opt/xebialabs/.xebialabs
-              subPath: xebialabs-dir
+              subPath: .xebialabs
             - name: empty-dir
               mountPath: /tmp
-              subPath: tmp-dir
+              subPath: tmp
+            - name: empty-dir
+              mountPath: /.xebialabs
+              subPath: .xebialabs
           {{- if .Values.defaultInitContainers.resources }}
           resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
           {{- end }}
