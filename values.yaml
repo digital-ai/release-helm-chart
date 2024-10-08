@@ -778,6 +778,24 @@ configuration:
           db-url="${XL_REPORT_DB_URL}"
           db-username=${XL_REPORT_DB_USERNAME}
           max-pool-size=${XL_REPORT_DB_MAX_POOL_SIZE}
+          {{- if or .Values.storage.reportingEngine.s3.enabled .Values.storage.reportingEngine.cleanupInterval }}
+          engine {
+            {{- if .Values.storage.reportingEngine.cleanupInterval }}
+            cleanUpInterval = "{{ .Values.storage.reportingEngine.cleanupInterval }}"
+            {{- end }}
+            {{- if or .Values.storage.reportingEngine.s3.enabled }}
+            type = "xlr-s3"
+            s3 {
+              bucket = "{{ .Values.storage.reportingEngine.s3.bucket | required "storage.reportingEngine.s3.bucket is required" }}"
+              base-key = "{{ .Values.storage.reportingEngine.s3.baseKey | required "storage.reportingEngine.s3.baseKey is required" }}"
+              region = "{{ .Values.storage.reportingEngine.s3.region | required "storage.reportingEngine.s3.region is required" }}"
+              {{- if .Values.storage.reportingEngine.s3.endpointUri }}
+              endpoint-uri = "{{ .Values.storage.reportingEngine.s3.endpointUri }}"
+              {{- end }}
+            }
+            {{- end }}
+          }
+          {{- end }}
         }
     
         # Task queue
@@ -869,6 +887,27 @@ configuration:
               }
             }
           }
+        }
+        {{- end }}
+        {{- if or .Values.storage.jobLog.s3.enabled .Values.storage.jobLog.cleanupInterval .Values.storage.jobLog.maxItemsPerCleanup }}
+        job-log {
+          {{- if .Values.storage.jobLog.cleanupInterval }}
+          cleanup-interval = "{{ .Values.storage.jobLog.cleanupInterval }}"
+          {{- end }}
+          {{- if .Values.storage.jobLog.maxItemsPerCleanup }}
+          max-items-per-cleanup = "{{ .Values.storage.jobLog.maxItemsPerCleanup }}"
+          {{- end }}
+          {{- if or .Values.storage.jobLog.s3.enabled }}
+          type = "xlr-s3"
+          s3 {
+            bucket = "{{ .Values.storage.jobLog.s3.bucket | required "storage.jobLog.s3.bucket is required" }}"
+            base-key = "{{ .Values.storage.jobLog.s3.baseKey | required "storage.jobLog.s3.baseKey is required" }}"
+            region = "{{ .Values.storage.jobLog.s3.region | required "storage.jobLog.s3.region is required" }}"
+            {{- if .Values.storage.jobLog.s3.endpointUri }}
+            endpoint-uri = "{{ .Values.storage.jobLog.s3.endpointUri }}"
+            {{- end }}
+          }
+          {{- end }}
         }
         {{- end }}
       }
@@ -1192,6 +1231,44 @@ persistence:
     - /opt/xebialabs/xl-release-server/plugins
     - /opt/xebialabs/xl-release-server/work
     - /tmp
+
+## Release storage configuration
+##
+storage:
+  ## Report engine storage configuration
+  ##
+  reportingEngine:
+    ## @param storage.reportingEngine.cleanupInterval Clean up interval (supports duration expressions - like "6 hours" - if set with numbers only it is milliseonds)
+    cleanupInterval:
+    s3:
+      ## @param storage.reportingEngine.s3.enabled Enables S3 storage for the engine reports. If not enabled it is using default file-system storage in the Release reports directory.
+      enabled: false
+      ## @param storage.reportingEngine.s3.bucket S3 bucket name, the bucket needs to be already created
+      bucket: 
+      ## @param storage.reportingEngine.s3.baseKey The S3 base key that will be used as a base for any S3 key to access objects in the storage. The separator needs to be /.
+      baseKey: 
+      ## @param storage.reportingEngine.s3.region Configure the region with which the AWS SDK should communicate.
+      region: 
+      ## @param storage.reportingEngine.s3.endpointUri Custom endpoint URI in case you are using some other S3 like storage (not AWS S3)
+      endpointUri:
+  ## Job log storage configuration
+  ##
+  jobLog:
+    ## @param storage.jobLog.cleanupInterval Clean up interval (supports duration expressions - like "6 hours" - if set with numbers only it is milliseonds). Default 10 minutes.
+    cleanupInterval:
+    ## @param storage.jobLog.maxItemsPerCleanup Number of items that will be cleaned in one clean iteration. Default 1024.
+    maxItemsPerCleanup:
+    s3:
+      ## @param storage.jobLog.s3.enabled Enables S3 storage for the Job logs. If not enabled it is using default file-system storage in the Release reports directory.
+      enabled: false
+      ## @param storage.jobLog.s3.bucket S3 bucket name, the bucket needs to be already created
+      bucket: 
+      ## @param storage.jobLog.s3.baseKey The S3 base key that will be used as a base for any S3 key to access objects in the storage. The separator needs to be /.
+      baseKey: 
+      ## @param storage.jobLog.s3.region Configure the region with which the AWS SDK should communicate.
+      region: 
+      ## @param storage.jobLog.s3.endpointUri Custom endpoint URI in case you are using some other S3 like storage (not AWS S3)
+      endpointUri:
 
 ## @section Exposure parameters
 ##
