@@ -380,6 +380,8 @@ auth:
 ssl:
   ## @param ssl.enabled Enable SSL to be used on Release
   enabled: false
+  ## @param ssl.sniHostCheck If true enable the SNI host check
+  sniHostCheck: true
   ## @param ssl.keystorePassword Keystore password with SSL key.
   keystorePassword:
   ## @param ssl.keystoreKeypassword Keystore key password with SSL key.
@@ -673,6 +675,13 @@ dnsConfig: {}
 ##
 jvmArgs: ""
 
+jvm:
+  ## @param jvm.overrideOptions Enable value override for JVM options, if this is false and JVM options are set in the environment, they will not be overridden.
+  overrideOptions: true
+  options:
+    ## @param jvm.options.networkaddress.cache.ttl The Java-level namelookup cache policy for successful lookups: any negative value: caching forever; any positive value: the number of seconds to cache an address for; zero: do not cache
+    "networkaddress.cache.ttl": 30
+
 ## @param command Override default container command (useful when using custom images)
 ##
 command:
@@ -750,6 +759,9 @@ configuration:
         server {
             http2 {
                 enabled = ${XLR_HTTP2_ENABLED}
+            }
+            ssl {
+                sniHostCheck = {{ .Values.ssl.sniHostCheck }}
             }
             session {
                 storage {
@@ -871,6 +883,10 @@ configuration:
           }
         }
         {{- end }}
+        jvm {
+            override-jvm-options = {{ .Values.jvm.overrideOptions }}
+            networkaddress.cache.ttl = {{ index .Values.jvm.options "networkaddress.cache.ttl" }}
+        }
       }
 
 ## @param extraConfiguration Configuration file content: extra configuration to be appended to Release configuration
