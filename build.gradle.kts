@@ -52,7 +52,7 @@ val arch = detectHostArch()
 val currentTime = Instant.now().toString()
 val releaseRepository = System.getenv()["RELEASE_REGISTRY"] ?: "xebialabsunsupported"
 val dockerHubRepository = System.getenv()["DOCKER_HUB_REPOSITORY"] ?: releaseRepository
-val releasedVersion = System.getenv()["RELEASE_EXPLICIT"] ?: "24.3.0-${
+val releasedVersion = System.getenv()["RELEASE_EXPLICIT"] ?: "25.1.0-${
     LocalDateTime.now().format(DateTimeFormatter.ofPattern("Mdd.Hmm"))
 }"
 project.extra.set("releasedVersion", releasedVersion)
