@@ -14,8 +14,13 @@ pipeline {
 
     environment {
         REPOSITORY_NAME = 'release-helm-chart'
-        RELEASE_EXPLICIT = "25.1.0-${getBranch()}"
+        RELEASE_EXPLICIT = "${getCurrentVersion()}-${getBranch()}"
         LINUX_JDK_NAME = 'OpenJDK 17.0.2'
+    }
+
+    parameters {
+        booleanParam(name: 'RUN_BUNDLE_BUILD', defaultValue: false, description: 'If the build should run operator bundle build.')
+        string(name: 'RELEASE_APP_EXPLICIT', defaultValue: getNightly(), description: 'The tag of the application images.')
     }
 
     stages {
@@ -35,22 +40,22 @@ pipeline {
                 sh "./gradlew clean runHelmUnitTestDocker -x updateDocs -x test --info --stacktrace"
             }
         }
-        // stage('Validate Readme Release Helm Chart') {
-        //     agent {
-        //         node {
-        //             label 'xld'
-        //         }
-        //     }
+        stage('Validate Readme Release Helm Chart') {
+            agent {
+                node {
+                    label 'xld'
+                }
+            }
 
-        //     tools {
-        //         jdk env.LINUX_JDK_NAME
-        //     }
+            tools {
+                jdk env.LINUX_JDK_NAME
+            }
 
-        //     steps {
-        //         checkout scm
-        //         sh "./gradlew clean buildReadmeDocker -x updateDocs -x test --info --stacktrace"
-        //     }
-        // }
+            steps {
+                checkout scm
+                sh "./gradlew clean buildReadmeDocker -x updateDocs -x test --info --stacktrace"
+            }
+        }
         stage('Build Release Helm Chart') {
             agent {
                 node {
@@ -103,6 +108,14 @@ pipeline {
                 }
             }
 
+            when {
+                anyOf {
+                    expression {
+                        params.RUN_BUNDLE_BUILD
+                    }
+                }
+            }
+
             tools {
                 jdk env.LINUX_JDK_NAME
             }
@@ -138,7 +151,15 @@ pipeline {
     }
 }
 
+def getCurrentVersion() {
+    return '25.1.0'
+}
+
 def getBranch() {
     // on simple Jenkins pipeline job the BRANCH_NAME is not filled in, and we run it only on master
-    return env.BRANCH_NAME ?: 'master'
+    return env.BRANCH_NAME ? env.BRANCH_NAME.toLowerCase() : 'master'
+}
+
+def getNightly() {
+    return "${getCurrentVersion()}-${java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("Mdd"))}.113"
 }
