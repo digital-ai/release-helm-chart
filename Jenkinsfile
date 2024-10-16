@@ -27,7 +27,7 @@ pipeline {
         stage('Lint and Unit test Release Helm Chart') {
             agent {
                 node {
-                    label 'xld'
+                    label 'xld && linux'
                 }
             }
 
@@ -43,7 +43,7 @@ pipeline {
         stage('Validate Readme Release Helm Chart') {
             agent {
                 node {
-                    label 'xld'
+                    label 'xld && linux'
                 }
             }
 
@@ -59,7 +59,7 @@ pipeline {
         stage('Build Release Helm Chart') {
             agent {
                 node {
-                    label 'xld'
+                    label 'xld && linux'
                 }
             }
 
@@ -82,7 +82,7 @@ pipeline {
         stage('Build Release Helm Operator Image') {
             agent {
                 node {
-                    label 'xld'
+                    label 'xld && linux'
                 }
             }
 
@@ -104,7 +104,7 @@ pipeline {
         stage('Build Release Helm Operator Bundle') {
             agent {
                 node {
-                    label 'xld'
+                    label 'xld && linux'
                 }
             }
 
