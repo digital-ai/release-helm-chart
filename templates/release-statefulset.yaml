@@ -155,9 +155,9 @@ spec:
             subPath: {{ regexFind "[^/]+$" $path }}
           {{- end }}
           {{- range $path := .Values.persistence.paths }}
-            - name: data
-              mountPath: {{ $path }}
-              subPath: {{ regexFind "[^/]+$" $path }}
+          - name: data
+            mountPath: {{ $path }}
+            subPath: {{ regexFind "[^/]+$" $path }}
           {{- end }}
         {{- end }}
         {{- if .Values.initContainers }}
