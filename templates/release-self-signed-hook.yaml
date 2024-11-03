@@ -35,7 +35,7 @@ metadata:
   {{- end }}
 data:
     "keystore-status": "{{ $keystoreExists }}"
-{{- if eq $keystoreExists "false" }}
+{{- if or (eq $keystoreExists "false") (.Values.hooks.genSelfSigned.forceExecute | default false) }}
 ---
 kind: Role
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}

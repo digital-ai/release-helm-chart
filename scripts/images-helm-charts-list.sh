@@ -12,6 +12,6 @@ docker run --rm \
   --entrypoint helm \
   xldevdocker/kuttl:latest \
   images get digitalai "/opt/project" -n digitalai \
-   --values "/opt/project/tests/values/basic.yaml" \
-   --values "/opt/project/tests/values/images.yaml" \
-   -o yaml
+  --values "/opt/project/tests/values/basic.yaml" \
+  --values "/opt/project/tests/values/images.yaml" \
+  | grep -v xebialabs | sort | uniq

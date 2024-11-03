@@ -45,17 +45,17 @@ Check [Installing the opm CLI](https://docs.openshift.com/container-platform/4.1
 
 ```shell
 opm index add \
-  --bundles docker.io/xebialabsunsupported/release-operator-bundle:24.3.0-beta.5 \
-  --tag docker.io/xebialabsunsupported/release-operator-index:24.3 \
+  --bundles docker.io/xebialabsunsupported/release-operator-bundle:25.1.0 \
+  --tag docker.io/xebialabsunsupported/release-operator-index:25.1 \
   --generate
 ```
 
 ```shell
-docker build -f index.Dockerfile -t docker.io/xebialabsunsupported/release-operator-index:24.3 .
+docker build -f index.Dockerfile -t docker.io/xebialabsunsupported/release-operator-index:25.1 .
 ```
 
 ```shell
-docker push docker.io/xebialabsunsupported/release-operator-index:24.3
+docker push docker.io/xebialabsunsupported/release-operator-index:25.1
 ```
 
 ## Create the CatalogSource
@@ -124,16 +124,16 @@ oc create -n release-test-operator -f ../config/samples/xlr_minimal.yaml
 
 ```shell
 opm index add \
-  --bundles docker.io/xebialabsunsupported/release-operator-bundle:24.3.0-beta.5 \
-  --from-index docker.io/xebialabsunsupported/release-operator-index:24.3 \
-  --tag docker.io/xebialabsunsupported/release-operator-index:24.3 \
+  --bundles docker.io/xebialabsunsupported/release-operator-bundle:25.1.0 \
+  --from-index docker.io/xebialabsunsupported/release-operator-index:25.1 \
+  --tag docker.io/xebialabsunsupported/release-operator-index:25.1 \
   --generate
 ```
 
 ```shell
-docker build -f index.Dockerfile -t docker.io/xebialabsunsupported/release-operator-index:24.3 .
+docker build -f index.Dockerfile -t docker.io/xebialabsunsupported/release-operator-index:25.1 .
 ```
 
 ```shell
-docker push docker.io/xebialabsunsupported/release-operator-index:24.3
+docker push docker.io/xebialabsunsupported/release-operator-index:25.1
 ```
