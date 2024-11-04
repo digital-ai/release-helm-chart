@@ -145,8 +145,8 @@ pipeline {
 
             steps {
                 checkout scm
-                sh "mkdir -p ./build && ./scripts/images-helm-charts.sh > ./build/external-dependencies-${getBranch()}.txt"
-                archiveArtifacts artifacts: 'build/external-dependencies-*.txt', fingerprint: true
+                sh "./scripts/images-helm-charts.sh ${getBranch()}"
+                archiveArtifacts artifacts: 'build/external-dependencies-*.yaml', fingerprint: true
             }
         }
         stage('Scan External Dependency Vulnerabilities') {
@@ -162,7 +162,7 @@ pipeline {
 
             steps {
                 checkout scm
-                sh " ./scripts/images-helm-charts-list.sh | ./scripts/scan-with-trivy.sh helm-${getBranch()}"
+                sh "./scripts/images-helm-charts-list.sh ${getBranch()} && cat ./build/scanResults/external-dependencies-${getBranch()}.txt | ./scripts/scan-with-trivy.sh helm-${getBranch()}"
                 archiveArtifacts artifacts: "build/scanResults/**/*.txt", fingerprint: true
             }
         }
@@ -180,7 +180,7 @@ pipeline {
             steps {
                 checkout scm
                 sh "echo \"docker.io/xebialabsunsupported/release-operator:\$RELEASE_EXPLICIT\" | ./scripts/scan-with-trivy.sh operator-${getBranch()}"
-                archiveArtifacts artifacts: "build/scanResults/*.txt", fingerprint: true
+                archiveArtifacts artifacts: "build/scanResults/**/*.txt", fingerprint: true
             }
         }
     }

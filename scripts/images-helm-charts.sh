@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p ./build
+
 docker run --rm \
   -e HOME=/opt/project \
   -v ./:/opt/project:rw \
@@ -14,4 +16,4 @@ docker run --rm \
   images get digitalai "/opt/project" -n digitalai \
    --values "/opt/project/tests/values/basic.yaml" \
    --values "/opt/project/tests/values/images.yaml" \
-   -o yaml
+   -o yaml > "./build/external-dependencies-${1}.yaml"

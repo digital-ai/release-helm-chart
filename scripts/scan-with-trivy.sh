@@ -29,9 +29,10 @@ do
   $TRIVY_EXEC image ${IGNORE_FIXED} ${TRIVY_PROPS} "${image}" > "${OUTPUT_DIR}/${filename}"
   if [ $? -ne 0 ]; then
     echo "***>>> Failed: trivy image ${IGNORE_FIXED} \"${image}\" > \"${OUTPUT_DIR}/${filename}\""
-    exit 1
+    # Continue work on missing images
+  else
+    echo "===>>> Finished: trivy image ${IGNORE_FIXED} \"${image}\" > \"${OUTPUT_DIR}/${filename}\""
   fi
-  echo "===>>> Finished: trivy image ${IGNORE_FIXED} \"${image}\" > \"${OUTPUT_DIR}/${filename}\""
 done
 
 echo ">>> Finished"
