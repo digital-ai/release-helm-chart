@@ -145,8 +145,8 @@ pipeline {
 
             steps {
                 checkout scm
-                sh "./scripts/images-helm-charts.sh > /build/external-dependencies-${getBranch()}.txt"
-                archiveArtifacts artifacts: 'build/external-dependencies-*.txt', fingerprint: true
+                sh "./scripts/images-helm-charts.sh > ./build/external-dependencies-${getBranch()}.txt"
+                arch`iveArtifacts artifacts: 'build/external-dependencies-*.txt', fingerprint: true
             }
         }
         stage('Scan External Dependency Vulnerabilities') {
