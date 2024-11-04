@@ -145,7 +145,7 @@ pipeline {
 
             steps {
                 checkout scm
-                sh "./scripts/images-helm-charts.sh > ./build/external-dependencies-${getBranch()}.txt"
+                sh "mkdir -p ./build && ./scripts/images-helm-charts.sh > ./build/external-dependencies-${getBranch()}.txt"
                 archiveArtifacts artifacts: 'build/external-dependencies-*.txt', fingerprint: true
             }
         }
@@ -163,7 +163,7 @@ pipeline {
             steps {
                 checkout scm
                 sh " ./scripts/images-helm-charts-list.sh | ./scripts/scan-with-trivy.sh helm-${getBranch()}"
-                archiveArtifacts artifacts: "build/scanResults/*.txt", fingerprint: true
+                archiveArtifacts artifacts: "build/scanResults/**/*.txt", fingerprint: true
             }
         }
         stage('Scan Operator Vulnerabilities') {
