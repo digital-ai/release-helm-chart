@@ -16,4 +16,4 @@ docker run --rm \
   images get digitalai "/opt/project" -n digitalai \
    --values "/opt/project/tests/values/basic.yaml" \
    --values "/opt/project/tests/values/images.yaml" \
-   -o yaml > "./build/external-dependencies-${1}.yaml"
+   -o yaml | sed -r "s:\x1B\[[0-9;]*[mK]::g" > "./build/external-dependencies-${1}.yaml"
