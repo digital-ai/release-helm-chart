@@ -1,7 +1,7 @@
 {{- if and .Values.hooks.installReleaseRunner.enabled }}
 {{- $name := include "common.tplvalues.render" ( dict "value" .Values.hooks.installReleaseRunner.name "context" $ ) -}}
 {{- $rrExists := ((lookup "apps/v1" "StatefulSet" (include "common.names.namespace" .) (.Values.hooks.installReleaseRunner.releaseName | default $name)) | default dict) -}}
-{{- if not $rrExists }}
+{{- if or (not $rrExists) (.Values.hooks.installReleaseRunner.forceExecute | default false) }}
 ---
 kind: Role
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}

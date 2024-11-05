@@ -10,3 +10,4 @@ values-*.yaml
 database/
 index.*
 kubeconfig
+.cache/

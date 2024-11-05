@@ -128,6 +128,9 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
+tasks.withType<AbstractPublishToMaven> {
+    dependsOn("buildHelmPackage")
+}
 
 tasks {
 
@@ -163,6 +166,10 @@ tasks {
                 into(helmDir)
                 fileMode = 0b111101101
             }
+            exec {
+                workingDir(helmDir)
+                commandLine(helmCli, "version")
+            }
         }
     }
 
@@ -176,18 +183,26 @@ tasks {
                 into(operatorSdkDir)
                 fileMode = 0b111101101
             }
+            exec {
+                workingDir(operatorSdkDir)
+                commandLine(operatorSdkCli, "version")
+            }
         }
     }
 
     register<Download>("installKustomize") {
         group = "kustomize"
-        src("https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$kustomizeVersion/kustomize_v5.0.1_${os}_$arch.tar.gz")
+        src("https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$kustomizeVersion/kustomize_v${kustomizeVersion}_${os}_$arch.tar.gz")
         dest(kustomizeDir.file("kustomize.tar.gz").getAsFile())
         doLast {
             copy {
                 from(tarTree(kustomizeDir.file("kustomize.tar.gz")))
                 into(kustomizeDir)
                 fileMode = 0b111101101
+            }
+            exec {
+                workingDir(kustomizeDir)
+                commandLine(kustomizeCli, "version")
             }
         }
     }
@@ -231,7 +246,7 @@ tasks {
         doLast {
             exec {
                 workingDir(buildXlrOperatorDir)
-                commandLine("rm", "-f", "Chart.lock")
+                commandLine("ls", "charts")
             }
         }
         doLast {
@@ -241,9 +256,10 @@ tasks {
 
     register<Exec>("runHelmLint") {
         group = "helm-test"
-        dependsOn("prepareHelmDepsHotfix")
+        dependsOn("prepareHelmDeps", "prepareHelmDepsHotfix")
 
-        commandLine(helmCli, "lint", "-f", "tests/values/basic.yaml")
+        workingDir(buildXlrOperatorDir)
+        commandLine(helmCli, "lint", "-f", "../../../tests/values/basic.yaml")
 
         doLast {
             logger.lifecycle("Finished running helm lint")
@@ -254,10 +270,11 @@ tasks {
         group = "helm-test"
         dependsOn("prepareHelmDepsHotfix")
 
+        workingDir(buildXlrOperatorDir)
         commandLine(helmCli, "plugin", "list")
 
         doLast {
-            val unitTestPluginExists = standardOutput.toString()
+            val unitTestPluginExists = if (standardOutput != null) standardOutput.toString() else ""
             if(!unitTestPluginExists.contains("unittest")) {
                 commandLine(helmCli, "plugin", "install", "https://github.com/helm-unittest/helm-unittest")
                 logger.lifecycle("Install helm unit test plugin finished")
@@ -267,11 +284,24 @@ tasks {
         }
     }
 
+    register<Exec>("runHelmUnitTestDocker") {
+        group = "helm-test"
+        dependsOn("runHelmLint")
+
+        workingDir(buildXlrOperatorDir)
+        commandLine("docker", "run", "--rm", "-v", ".:/apps", "helmunittest/helm-unittest", "--file=../../../tests/unit/*_test.yaml", ".")
+
+        doLast {
+            logger.lifecycle("Finished running unit tests")
+        }
+    }
+
     register<Exec>("runHelmUnitTest") {
         group = "helm-test"
         dependsOn("installHelmUnitTestPlugin", "runHelmLint")
 
-        commandLine(helmCli, "unittest", "--file=tests/unit/*_test.yaml", ".")
+        workingDir(buildXlrOperatorDir)
+        commandLine(helmCli, "unittest", "--file=../../../tests/unit/*_test.yaml", ".")
 
         doLast {
             logger.lifecycle("Finished running unit tests")
@@ -313,6 +343,17 @@ tasks {
                     targetFile)
             }
             logger.lifecycle("Init operator image finished")
+        }
+    }
+
+    register<Exec>("buildReadmeDocker") {
+        group = "readme"
+        workingDir(layout.projectDirectory)
+        commandLine("docker", "run", "--rm", "-v", ".:/app/helm", "-w", "/app/helm", "xldevdocker/readme-generator-for-helm:latest",
+            "readme-generator", "--readme", "README.md", "--values", "values.yaml")
+
+        doLast {
+            logger.lifecycle("Update README.md finished")
         }
     }
 

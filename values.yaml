@@ -1429,8 +1429,6 @@ securityContextConstraints:
 ##
 resourcesPreset: "micro"
 ## @param resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
-## @param resources.limits The resources limits for Release containers
-## @param resources.requests The requested resources for Release containers
 ## Example:
 ## resources: 
 ##   limits:
@@ -1459,7 +1457,9 @@ health:
 
 ## Default init containers for the Release pod
 defaultInitContainers:
-  ## @param defaultInitContainers.resources Set default init container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## @extra defaultInitContainers.resources Set default init container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## @skip defaultInitContainers.resources.limits
+  ## @skip defaultInitContainers.resources.requests
   ##
   resources:
     limits:
@@ -1516,7 +1516,7 @@ volumePermissions:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 12-debian-12-r16
+    tag: 12-debian-12-r31
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -1542,8 +1542,9 @@ volumePermissions:
         xargs -r chown -R "{{ .Values.containerSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }}"
     done
   ## Init Container resource requests and limits
-  ## @param volumePermissions.resources.limits Init container volume-permissions resource limits
-  ## @param volumePermissions.resources.requests Init container volume-permissions resource requests
+  ## @extra volumePermissions.resources Set default init container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## @skip volumePermissions.resources.limits
+  ## @skip volumePermissions.resources.requests
   ##
   resources:
     limits:
@@ -1804,7 +1805,7 @@ postgresql:
     enabled: true
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
-      tag: 12-debian-12-r21
+      tag: 12-debian-12-r31
 
 ## @section RabbitMQ
 ##
@@ -1932,7 +1933,7 @@ rabbitmq:
     enabled: true
     ## @param rabbitmq.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
-      tag: 12-debian-12-r21
+      tag: 12-debian-12-r31
 
     ## Init container' Security Context
     ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
