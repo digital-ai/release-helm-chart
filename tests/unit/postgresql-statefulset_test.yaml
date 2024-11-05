@@ -10,6 +10,8 @@ release:
 tests:
   - it: basic should work
     template: charts/postgresql/templates/primary/statefulset.yaml
+    set:
+      postgresql.primary.configuration: null
     values:
       - ../values/basic.yaml
     asserts:

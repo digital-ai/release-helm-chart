@@ -35,7 +35,7 @@ metadata:
   {{- end }}
 data:
     "license-status": "{{ $licenseExists }}"
-{{- if eq $licenseExists "false" }}
+{{- if or (eq $licenseExists "false") (.Values.hooks.getLicense.forceExecute | default false) }}
 ---
 kind: Role
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}

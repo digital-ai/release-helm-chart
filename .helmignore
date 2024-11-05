@@ -37,3 +37,4 @@ scripts/
 values-*.yaml
 .env
 kubeconfig
+.cache/
