@@ -230,6 +230,7 @@ hooks:
     ## @param hooks.genSelfSigned.containerSecurityContext.enabled Enabled generate self-signed containers' Security Context
     ## @param hooks.genSelfSigned.containerSecurityContext.runAsNonRoot Set generate self-signed container's Security Context runAsNonRoot
     ## @param hooks.genSelfSigned.containerSecurityContext.allowPrivilegeEscalation Set generate self-signed container's Security Context allowPrivilegeEscalation
+    ## @param hooks.genSelfSigned.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
     ## @extra hooks.genSelfSigned.containerSecurityContext.capabilities Set generate self-signed container's Security Context capabilities
     ## @skip hooks.genSelfSigned.containerSecurityContext.capabilities
     ## @extra hooks.genSelfSigned.containerSecurityContext.seccompProfile Set generate self-signed container's Security Context seccompProfile
@@ -346,6 +347,7 @@ hooks:
     ## @param hooks.installReleaseRunner.containerSecurityContext.enabled Enabled install RR containers' Security Context
     ## @param hooks.installReleaseRunner.containerSecurityContext.runAsNonRoot Set install RR container's Security Context runAsNonRoot
     ## @param hooks.installReleaseRunner.containerSecurityContext.allowPrivilegeEscalation Set install RR container's Security Context allowPrivilegeEscalation
+    ## @param hooks.installReleaseRunner.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
     ## @extra hooks.installReleaseRunner.containerSecurityContext.capabilities Set install RR container's Security Context capabilities
     ## @skip hooks.installReleaseRunner.containerSecurityContext.capabilities
     ## @extra hooks.installReleaseRunner.containerSecurityContext.seccompProfile Set install RR container's Security Context seccompProfile
@@ -1238,6 +1240,7 @@ persistence:
   ## @param persistence.paths mounted paths for the Release
   paths:
     - /opt/xebialabs/xl-release-server/reports
+  ## @param persistence.emptyDirPaths mounted empty-dir mounts to have wrtieable paths
   emptyDirPaths:
     - /opt/xebialabs/xl-release-server/cache
     - /opt/xebialabs/xl-release-server/conf
@@ -1482,6 +1485,7 @@ podSecurityContext:
 ## @param containerSecurityContext.enabled Enabled Release containers' Security Context
 ## @param containerSecurityContext.runAsNonRoot Set Release container's Security Context runAsNonRoot
 ## @param containerSecurityContext.allowPrivilegeEscalation Set Release container's Security Context allowPrivilegeEscalation
+## @param containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
 ## @extra containerSecurityContext.capabilities Set Release container's Security Context capabilities
 ## @skip containerSecurityContext.capabilities
 ## @extra containerSecurityContext.seccompProfile Set Release container's Security Context seccompProfile
@@ -1514,8 +1518,6 @@ containerSecurityContext:
 ##
 resourcesPreset: "micro"
 ## @param resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
-## @param resources.limits The resources limits for Release containers
-## @param resources.requests The requested resources for Release containers
 ## Example:
 ## resources: 
 ##   limits:
@@ -1544,7 +1546,9 @@ health:
 
 ## Default init containers for the Release pod
 defaultInitContainers:
-  ## @param defaultInitContainers.resources Set default init container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## @extra defaultInitContainers.resources Set default init container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## @skip defaultInitContainers.resources.limits
+  ## @skip defaultInitContainers.resources.requests
   ##
   resources:
     limits:
@@ -1627,8 +1631,9 @@ volumePermissions:
         xargs -r chown -R "{{ .Values.containerSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }}"
     done
   ## Init Container resource requests and limits
-  ## @param volumePermissions.resources.limits Init container volume-permissions resource limits
-  ## @param volumePermissions.resources.requests Init container volume-permissions resource requests
+  ## @extra volumePermissions.resources Set default init container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## @skip volumePermissions.resources.limits
+  ## @skip volumePermissions.resources.requests
   ##
   resources:
     limits:
@@ -1642,6 +1647,8 @@ volumePermissions:
   ## Init container' Security Context
   ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
   ## and not the below volumePermissions.containerSecurityContext.runAsUser
+  ## @param volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
+  ## @param volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
   ## @param volumePermissions.containerSecurityContext.runAsUser User ID for the init container
   ## @param volumePermissions.containerSecurityContext.runAsGroup Group ID for the init container
   ## @param volumePermissions.containerSecurityContext.runAsNonRoot Set volume permissions init container's Security Context runAsNonRoot
@@ -1717,16 +1724,25 @@ haproxy-ingress:
       ## @param haproxy-ingress.controller.service.type Kubernetes Service type for Controller
       ##
       type: LoadBalancer
+    ## @param haproxy-ingress.controller.legacySecurityContext Use latest security context implementation
     legacySecurityContext: false
+    ## @param haproxy-ingress.controller.securityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
+    ## @param haproxy-ingress.controller.securityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
+    ## @extra haproxy-ingress.controller.securityContext.seccompProfile Set deploy container's Security Context seccompProfile
+    ## @skip haproxy-ingress.controller.securityContext.seccompProfile
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       seccompProfile:
         type: RuntimeDefault
-    extraVolumes: 
+    ## @extra haproxy-ingress.controller.extraVolumes set empty-dir volume
+    ## @skip haproxy-ingress.controller.extraVolumes
+    extraVolumes:
     - name: empty-dir
       emptyDir: {}
-    extraVolumeMounts: 
+    ## @extra haproxy-ingress.controller.extraVolumeMounts set empty-dir volume mounts to have wrtieable paths
+    ## @skip haproxy-ingress.controller.extraVolumeMounts
+    extraVolumeMounts:
     - name: empty-dir
       mountPath: /etc/haproxy
       subPath: haproxy
@@ -2011,6 +2027,7 @@ rabbitmq:
     size: 8Gi
 
   ## @param rabbitmq.containerSecurityContext.allowPrivilegeEscalation Set volume permissions init container's Security Context allowPrivilegeEscalation
+  ## @param rabbitmq.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
   ## @extra rabbitmq.containerSecurityContext.capabilities Set volume permissions init container's Security Context capabilities
   ## @skip rabbitmq.containerSecurityContext.capabilities
   ## @extra rabbitmq.containerSecurityContext.seccompProfile Set volume permissions init container's Security Context seccompProfile
@@ -2052,6 +2069,8 @@ rabbitmq:
     ## Init container' Security Context
     ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
     ## and not the below volumePermissions.containerSecurityContext.runAsUser
+    ## @param rabbitmq.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Set volume permissions init container's Security Context allowPrivilegeEscalation
+    ## @param rabbitmq.volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
     ## @param rabbitmq.volumePermissions.containerSecurityContext.runAsUser User ID for the init container
     ## @param rabbitmq.volumePermissions.containerSecurityContext.runAsGroup Group ID for the init container
     ## @param rabbitmq.volumePermissions.containerSecurityContext.runAsNonRoot Set volume permissions init container's Security Context runAsNonRoot
