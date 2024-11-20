@@ -7,3 +7,4 @@ LABEL name="Digital.ai Release Operator" \
       description="Digital.ai Release Operator based on helm chart from https://github.com/digital-ai/release-helm-chart"
 
 COPY licenses /licenses
+COPY linux-amd64/helm /usr/local/bin/helm
