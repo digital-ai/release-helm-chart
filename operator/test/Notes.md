@@ -42,12 +42,9 @@ spec:
       - ReadWriteOnce
     size: 1Gi
   podSecurityContext:
-    runAsUser: null
-    runAsGroup: null
-    fsGroup: null
+    enabled: false
   containerSecurityContext:
-    runAsUser: null
-    runAsGroup: null
+    enabled: false
   volumePermissions:
     enabled: false
   route:
@@ -71,9 +68,6 @@ spec:
       resourcesPreset: "small"
       podSecurityContext:
         enabled: false
-        runAsUser: null
-        runAsGroup: null
-        fsGroup: null
       containerSecurityContext:
         enabled: false
         runAsUser: null
@@ -88,13 +82,8 @@ spec:
     replicaCount: 1
     podSecurityContext:
       enabled: false
-      runAsUser: null
-      runAsGroup: null
-      fsGroup: null
     containerSecurityContext:
       enabled: false
-      runAsUser: null
-      runAsGroup: null
     volumePermissions:
       enabled: false
 ```
