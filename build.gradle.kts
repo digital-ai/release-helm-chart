@@ -658,7 +658,7 @@ tasks {
         dependsOn(named("docBuild"))
     }
 
-    val postgresqlSubchart = "postgresql-16.2.2.tgz"
+    val postgresqlSubchart = "postgresql-15.5.14.tgz"
 
     register("prepareHelmDepsHotfix") {
         group = "helm-hotfix"
