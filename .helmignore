@@ -25,6 +25,7 @@ buildSrc/
 *gradle*
 
 # Specific
+database/
 documentation/
 integration-tests/
 docs/
@@ -34,7 +35,9 @@ build/
 tests/
 tests-values/
 scripts/
+.cache/
 values-*.yaml
 .env
 kubeconfig
-.cache/
+Jenkinsfile
+index.Dockerfile
