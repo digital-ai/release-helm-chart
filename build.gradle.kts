@@ -376,9 +376,22 @@ tasks {
         }
     }
 
+    register<Download>("downloadHelm") {
+        group = "operator"
+        src("https://get.helm.sh/helm-v$helmVersion-linux-amd64.tar.gz")
+        dest(helmDir.file("helm.tar.gz").getAsFile())
+        doLast {
+            copy {
+                from(tarTree(helmDir.file("helm.tar.gz")))
+                into(buildXlrDir)
+                fileMode = 0b111101101
+            }
+        }
+    }
+
     register<Exec>("buildOperatorImage") {
         group = "operator"
-        dependsOn("installKustomize", "buildOperatorApiHotfix")
+        dependsOn("installKustomize", "buildOperatorApiHotfix", "downloadHelm")
         workingDir(buildXlrDir)
         commandLine("make", "docker-build",
             "IMG=$operatorImageUrl", operatorSdkCliVar, kustomizeCliVar)
