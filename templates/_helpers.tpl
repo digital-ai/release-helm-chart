@@ -358,7 +358,7 @@ Get the external rabbitmq queue type
     {{- if .Values.external.mq.queueType -}}
         {{ .Values.external.mq.queueType | quote }}
     {{- else -}}
-        "classic"
+        "quorum"
     {{- end -}}
 {{- end -}}
 

@@ -436,7 +436,7 @@ external:
     username:
     ## @param external.mq.password External message queue broker password for Release
     password:
-    ## @param external.mq.queueType Applies only for external rabbitmq message broker. Can be either classic(default) or quorum
+    ## @param external.mq.queueType Applies only for external rabbitmq message broker. Can be either classic or quorum (default)
     queueType: ""
     ## @param external.mq.connector Connector type depending on external message queue broker. Can be either rabbitmq-jms(default) or activemq-jms
     connector: ""
@@ -2002,6 +2002,10 @@ rabbitmq:
   ##
   extraConfiguration: |
     raft.wal_max_size_bytes = 1048576
+    quorum_queue.continuous_membership_reconciliation.enabled = true
+    quorum_queue.continuous_membership_reconciliation.target_group_size = 3
+    quorum_queue.continuous_membership_reconciliation.auto_remove = true
+    quorum_queue.continuous_membership_reconciliation.interval = 600000
 
   ## @section RabbitMQ persistence parameters
   ##
