@@ -1,4 +1,4 @@
-{{- if and .Values.route.enabled (eq .Values.k8sSetup.platform "Openshift") }}
+{{- if and .Values.route.enabled (hasPrefix  "Openshift" .Values.k8sSetup.platform) }}
 {{- $fullName := include "common.names.fullname" . -}}
 apiVersion: route.openshift.io/v1
 kind: Route
