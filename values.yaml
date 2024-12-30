@@ -679,8 +679,6 @@ dnsConfig: {}
 jvmArgs: ""
 
 jvm:
-  ## @param jvm.overrideOptions Enable value override for JVM options, if this is false and JVM options are set in the environment, they will not be overridden.
-  overrideOptions: true
   options:
     ## @param jvm.options.networkaddress.cache.ttl The Java-level namelookup cache policy for successful lookups: any negative value: caching forever; any positive value: the number of seconds to cache an address for; zero: do not cache
     "networkaddress.cache.ttl": 30
@@ -946,10 +944,6 @@ configuration:
           {{- end }}
         }
         {{- end }}
-        jvm {
-            override-jvm-options = {{ .Values.jvm.overrideOptions }}
-            networkaddress.cache.ttl = {{ index .Values.jvm.options "networkaddress.cache.ttl" }}
-        }
       }
 
 ## @param extraConfiguration Configuration file content: extra configuration to be appended to Release configuration
