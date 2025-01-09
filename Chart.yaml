@@ -40,6 +40,6 @@ dependencies:
     condition: postgresql.install
 
   - name: rabbitmq
-    version: 14.7.0
+    version: 15.1.0
     repository: "https://charts.bitnami.com/bitnami"
     condition: rabbitmq.install
