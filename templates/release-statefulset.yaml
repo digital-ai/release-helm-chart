@@ -326,6 +326,8 @@ spec:
               value: {{ .Values.appContextRoot }}
             - name: XL_RELEASE_SERVER_OPTS
               value: "{{- include "common.tplvalues.render" (dict "value" .Values.jvmArgs "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.truststore.params "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.debugMode.remoteJvmParams "context" $) }}"
+            - name: NETWORK_ADDRESS_CACHE_TTL
+              value: {{ (index .Values.jvm.options "networkaddress.cache.ttl") | quote }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
