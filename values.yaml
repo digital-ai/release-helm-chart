@@ -54,9 +54,15 @@ useIpAsHostname: false
 ## @param forceRemoveMissingTypes Force removal of the missing types.
 ##
 forceRemoveMissingTypes: false
-## @param clusterMode This is to specify if the HA setup is needed and to specify the HA mode. Possible values: "default", "hot-standby", "full"
+## @param cluster.mode This is to specify if the HA setup is needed and to specify the HA mode. Possible values: "default", "hot-standby", "full"
 ##
-clusterMode: full
+cluster:
+  node:
+    datacenter: default
+  mode: full
+  manager: xlr-legacy
+  name: xl-release_cluster
+
 ## @param forceUpgrade It can be used to perform an upgrade in non-interactive mode by passing flag -force-upgrades while starting a service.
 ##
 forceUpgrade: true
@@ -697,8 +703,10 @@ args:
 lifecycleHooks: {}
 ## @param terminationGracePeriodSeconds Default duration in seconds k8s waits for container to exit before sending kill signal.
 ## Any time in excess of 10 seconds will be spent waiting for any synchronization necessary for cluster not to lose data.
+## It should be greater from `xl.cluster.pekko.coordinated-shutdown.phases.cluster-sharding-shutdown-region.timeout`
+## and `xl.cluster.pekko.coordinated-shutdown.phases.actor-system-terminate.timeout`
 ##
-terminationGracePeriodSeconds: 200
+terminationGracePeriodSeconds: 450
 ## @param extraEnvVars Extra environment variables to add to Release pods
 ## E.g:
 ## extraEnvVars:
@@ -750,6 +758,7 @@ configuration:
           node {
             id = ${XL_NODE_NAME}
             hostname = ${XL_NODE_NAME}
+            datacenter = ${XLR_CLUSTER_DATACENTER}
             clusterPort = 5531
           }
         }
@@ -767,7 +776,8 @@ configuration:
         cluster {
           # mode: "default", "hot-standby", "full"
           mode = ${XL_CLUSTER_MODE}
-          name = "xl-release_cluster"
+          name = "${XLR_CLUSTER_NAME}"
+          manager = "${XLR_CLUSTER_MANAGER}"
           pekko {
             loglevel = "INFO"
             actor.debug.receive = off
@@ -775,6 +785,11 @@ configuration:
                 log-received-messages = off
                 log-sent-messages = off
             }
+            {{- if .Values.storage.reportingEngine.downingProviderClass }}
+            cluster {
+              downing-provider-class = {{.Values.storage.reportingEngine.downingProviderClass | quote}}
+            }
+            {{- end }}
           }
         }
       
