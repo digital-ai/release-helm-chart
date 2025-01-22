@@ -14,7 +14,7 @@
 
 {{- define "release.name" -}}
 {{- $name := ( include "common.names.fullname" . ) -}}
-{{- if eq .Values.k8sSetup.platform "Openshift" -}}
+{{- if hasPrefix  "Openshift" .Values.k8sSetup.platform -}}
 {{- printf "%s-ocp" $name -}}
 {{- else -}}
 {{- $name -}}
