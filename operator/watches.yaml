@@ -1,8 +1,4 @@
 
-  selector:
-    matchLabels:
-      app.kubernetes.io/instance: dair-min
-  watchDependentResources: false
   overrideValues:
     image.image: $RELATED_IMAGE_RELEASE
     volumePermissions.image.image: $RELATED_IMAGE_RELEASE_VOLUME_PERMISSIONS
