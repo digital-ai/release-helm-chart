@@ -44,6 +44,7 @@ project.defaultTasks = listOf("build")
 
 val helmVersion = properties["helmVersion"]
 val operatorSdkVersion = properties["operatorSdkVersion"]
+val openshiftPreflightVersion = properties["openshiftPreflightVersion"]
 val kustomizeVersion = properties["kustomizeVersion"]
 val operatorBundleChannels = properties["operatorBundleChannels"]
 val operatorBundleDefaultChannel = properties["operatorBundleDefaultChannel"]
@@ -144,6 +145,7 @@ tasks {
 
     val operatorImageUrl = "docker.io/$dockerHubRepository/release-operator:$releasedVersion"
     val bundleImageUrl = "docker.io/$releaseRepository/release-operator-bundle:$releasedVersion"
+    val releaseImageUrl = "docker.io/$releaseRepository/xl-release:$releasedAppVersion"
     val buildXlrDir = layout.buildDirectory.dir("xlr")
     val buildXlrOperatorDir = layout.buildDirectory.dir("xlr/${project.name}")
     val operatorFolder = projectDir.resolve("operator")
@@ -151,6 +153,8 @@ tasks {
     val helmCli = helmDir.dir("$os-$arch").file("helm")
     val operatorSdkDir = layout.buildDirectory.dir("operatorSdk").get()
     val operatorSdkCli = operatorSdkDir.file("operator-sdk")
+    val openshiftPreflightDir = layout.buildDirectory.dir("openshiftPreflight").get()
+    val openshiftPreflightCli = openshiftPreflightDir.file("openshift-preflight")
     val kustomizeDir = layout.buildDirectory.dir("kustomize").get()
     val kustomizeCli = kustomizeDir.file("kustomize")
     val operatorSdkCliVar = "OPERATOR_SDK=${operatorSdkCli.toString().replace(" ", "\\ ")}"
@@ -186,6 +190,24 @@ tasks {
             exec {
                 workingDir(operatorSdkDir)
                 commandLine(operatorSdkCli, "version")
+            }
+        }
+    }
+
+    register<Download>("installOpenshiftPreflight") {
+        group = "openshift-preflight"
+        // dependsOn("installOperatorSdk")
+        src("https://github.com/redhat-openshift-ecosystem/openshift-preflight/releases/download/$openshiftPreflightVersion/preflight-${os}-$arch")
+        dest(openshiftPreflightDir.dir("install").file("openshift-preflight").getAsFile())
+        doLast {
+            copy {
+                from(openshiftPreflightDir.dir("install").file("openshift-preflight"))
+                into(openshiftPreflightDir)
+                fileMode = 0b111101101
+            }
+            exec {
+                workingDir(openshiftPreflightDir)
+                commandLine(openshiftPreflightCli, "--version")
             }
         }
     }
@@ -721,6 +743,49 @@ tasks {
         }
     }
 
+    register<Exec>("preflightCheckOperator") {
+        group = "openshift-preflight"
+        dependsOn(
+            "installOpenshiftPreflight",
+            // "publishOperatorToDockerHub",
+        )
+        workingDir(buildXlrDir)
+        commandLine(openshiftPreflightCli, "check", "container", 
+            operatorImageUrl)
+
+        doLast {
+            logger.lifecycle("Openshift preflight container check $operatorImageUrl finished")
+        }
+    }
+
+    register<Exec>("preflightCheckApplication") {
+        group = "openshift-preflight"
+        dependsOn(
+            "installOpenshiftPreflight",
+        )
+        workingDir(buildXlrDir)
+        commandLine(openshiftPreflightCli, "check", "container", 
+            releaseImageUrl)
+
+        doLast {
+            logger.lifecycle("Openshift preflight container check $releaseImageUrl finished")
+        }
+    }
+
+    register<Exec>("preflightCheckBundle") {
+        group = "openshift-preflight"
+        dependsOn(
+            "installOpenshiftPreflight",
+            // "publishBundleToDockerHub",
+        )
+        workingDir(buildXlrDir)
+        commandLine(openshiftPreflightCli, "check", "operator", 
+            bundleImageUrl)
+
+        doLast {
+            logger.lifecycle("Openshift preflight operator check $bundleImageUrl finished")
+        }
+    }
 }
 
 tasks.withType<AbstractPublishToMaven> {
