@@ -1544,20 +1544,62 @@ resourcesPreset: "micro"
 ##
 resources: {}
 
-## Configure containers' extra options for liveness and readiness probe
+## Configure containers' options for liveness probe
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-## @param health.enabled Enable probes
-## @param health.periodScans Period seconds for probe
-## @param health.probeFailureThreshold Failure threshold for probe
-## @param health.probesLivenessTimeout Initial delay seconds for livenessProbe
-## @param health.probesReadinessTimeout Initial delay seconds for readinessProbe
+## @param livenessProbe.enabled Enable livenessProbe
+## @param livenessProbe.path Path for livenessProbe
+## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+## @param livenessProbe.periodSeconds Period seconds for livenessProbe
+## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+## @param livenessProbe.failureThreshold Failure threshold for livenessProbe
+## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
-health:
+livenessProbe:
   enabled: true
-  periodScans: 10
-  probeFailureThreshold: 12
-  probesLivenessTimeout: 60
-  probesReadinessTimeout: 60
+  path: s/actuator/health/liveness
+  initialDelaySeconds: 10
+  timeoutSeconds: 20
+  periodSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+## Configure containers' options for readiness probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param readinessProbe.enabled Enable readinessProbe
+## @param readinessProbe.path Path for readinessProbe
+## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+## @param readinessProbe.periodSeconds Period seconds for readinessProbe
+## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
+## @param readinessProbe.successThreshold Success threshold for readinessProbe
+##
+readinessProbe:
+  enabled: true
+  path: s/actuator/health/readiness
+  initialDelaySeconds: 10
+  timeoutSeconds: 20
+  periodSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+## Configure containers' options for startup probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param startupProbe.enabled Enable startupProbe
+## @param startupProbe.path Path for startupProbe
+## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+## @param startupProbe.periodSeconds Period seconds for startupProbe
+## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
+## @param startupProbe.failureThreshold Failure threshold for startupProbe
+## @param startupProbe.successThreshold Success threshold for startupProbe
+##
+startupProbe:
+  enabled: true
+  path: s/actuator/health/readiness
+  initialDelaySeconds: 60
+  timeoutSeconds: 20
+  periodSeconds: 10
+  failureThreshold: 12
+  successThreshold: 1
 
 ## Default init containers for the Release pod
 defaultInitContainers:
