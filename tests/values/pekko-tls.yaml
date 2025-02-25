@@ -1,0 +1,20 @@
+pekko:
+  management:
+    ssl:
+      enabled: true
+      keystorePassword: 
+      keystore: 
+      truststorePassword:
+      truststore:
+  remote:
+    artery:
+      ssl: 
+        enabled: true
+        keystoreKeypassword:
+        keystorePassword: 
+        keystore: 
+        keystoreType: pkcs12
+        truststorePassword:
+        truststore:
+        truststoreType: pkcs12
+

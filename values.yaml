@@ -751,7 +751,7 @@ configuration:
             id = ${XL_NODE_NAME}
             hostname = ${XL_NODE_NAME}
             clusterPort = 5531
-          }
+          } 
         }
       }
       
@@ -772,10 +772,49 @@ configuration:
             loglevel = "INFO"
             actor.debug.receive = off
             remote {
-                log-received-messages = off
-                log-sent-messages = off
+              log-received-messages = off
+              log-sent-messages = off
+              {{- if .Values.pekko.remote.artery.ssl.enabled }}
+              artery {
+                ssl {
+                  config-ssl-engine {
+                    enabled-algorithms = [
+                      "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+                      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                      "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
+                      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                      "TLS_RSA_WITH_AES_128_CBC_SHA"
+                    ]
+                    key-password = ${?PEKKO_ARTERY_SSL_KEYSTORE_KEYPASSWORD}
+                    key-store = "${?PEKKO_ARTERY_SSL_KEYSTORE}"
+                    key-store-password = ${?PEKKO_ARTERY_SSL_KEYSTORE_PASSWORD}
+                    trust-store = "${?PEKKO_ARTERY_SSL_TRUSTSTORE}"
+                    trust-store-password = "${?PEKKO_ARTERY_SSL_TRUSTSTORE_PASSWORD}"
+                    hostname-verification = off  
+                    require-mutual-authentication = off  
+                  }
+                }
+              }
+              {{- end }}
             }
           }
+          {{- if .Values.pekko.management.ssl.enabled }}
+          xlr-pekko-native {  
+            pekko {  
+              management {  
+                ssl {  
+                  enabled = {{ .Values.pekko.management.ssl.enabled }}
+                  keyStore = "${?PEKKO_MANAGEMENT_SSL_KEYSTORE}"
+                  keyStorePassword = ${?PEKKO_MANAGEMENT_SSL_KEYSTORE_PASSWORD}
+                  keystoreType = {{ .Values.pekko.management.ssl.keystoreType }}
+                  trustStore = "${?PEKKO_MANAGEMENT_SSL_TRUSTSTORE}"
+                  trustStorePassword = ${?PEKKO_MANAGEMENT_SSL_TRUSTSTORE_PASSWORD}
+                  trustStoreType = {{ .Values.pekko.management.ssl.truststoreType | quote }}
+                }  
+              }  
+            }  
+          } 
+          {{- end }}
         }
       
         server {

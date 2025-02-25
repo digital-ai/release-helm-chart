@@ -288,6 +288,38 @@ spec:
               {{- include "render.value-secret" (dict  "value" (.Values.truststore.password) "defaultName" (include "common.names.fullname" .) "defaultKey" "truststorePassword" "context" $ ) | nindent 14 }}
             {{- end }}
             {{- end }}
+            {{- if .Values.pekko.remote.artery.ssl.enabled }}
+            {{- if .Values.pekko.remote.artery.ssl.keystoreKeypassword }}
+            - name: PEKKO_ARTERY_SSL_KEYSTORE_KEYPASSWORD
+              {{- include "render.value-secret" (dict  "value" (.Values.pekko.remote.artery.ssl.keystoreKeypassword) "defaultName" (include "common.names.fullname" .) "defaultKey" "pekkoArteryKeystoreKeypassword" "context" $ ) | nindent 14 }}
+            {{- end }}
+            - name: PEKKO_ARTERY_SSL_KEYSTORE
+              value: "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.remote.artery.ssl.keystore "default" "pekkoArteryKeystore" "context" $) }}"
+            {{- if .Values.pekko.remote.artery.ssl.keystorePassword }}
+            - name: PEKKO_ARTERY_SSL_KEYSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" (.Values.pekko.remote.artery.ssl.keystorePassword) "defaultName" (include "common.names.fullname" .) "defaultKey" "pekkoArteryKeystorePassword" "context" $ ) | nindent 14 }}
+            {{- end }}
+            - name: PEKKO_ARTERY_SSL_TRUSTSTORE
+              value: "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.remote.artery.ssl.truststore "default" "pekkoArteryTruststore" "context" $) }}"
+            {{- if .Values.pekko.remote.artery.ssl.truststorePassword }}
+            - name: PEKKO_ARTERY_SSL_TRUSTSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" (.Values.pekko.remote.artery.ssl.truststorePassword) "defaultName" (include "common.names.fullname" .) "defaultKey" "pekkoArteryTruststorePassword" "context" $ ) | nindent 14 }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.pekko.management.ssl.enabled }}
+            - name: PEKKO_MANAGEMENT_SSL_KEYSTORE
+              value: "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.management.ssl.keystore "default" "pekkoManagementKeystore" "context" $) }}"
+            {{- if .Values.pekko.management.ssl.keystorePassword }}
+            - name: PEKKO_MANAGEMENT_SSL_KEYSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" (.Values.pekko.management.ssl.keystorePassword) "defaultName" (include "common.names.fullname" .) "defaultKey" "pekkoManagementKeystorePassword" "context" $ ) | nindent 14 }}
+            {{- end }}
+            - name: PEKKO_MANAGEMENT_SSL_TRUSTSTORE
+              value: "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.management.ssl.truststore "default" "pekkoManagementTruststore" "context" $) }}"
+            {{- if .Values.pekko.management.ssl.truststorePassword }}
+            - name: PEKKO_MANAGEMENT_SSL_TRUSTSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" (.Values.pekko.management.ssl.truststorePassword) "defaultName" (include "common.names.fullname" .) "defaultKey" "pekkoManagementTruststorePassword" "context" $ ) | nindent 14 }}
+            {{- end }}
+            {{- end }}
             {{- if .Values.oidc.enabled }}
             - name: OIDC_CLIENT_ID
               {{- include "render.value-secret" (dict  "value" .Values.oidc.clientId "defaultName" (include "common.names.fullname" .) "defaultKey" "oidcClientId" "context" $ ) | nindent 14 }}
@@ -403,6 +435,26 @@ spec:
               subPath: {{ include "secrets.key" (dict "secretRef" .Values.truststore.truststore "default" "truststore" "context" $) }}
               readOnly: true
             {{- end }}
+            {{- if .Values.pekko.remote.artery.ssl.enabled }}
+            - mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.remote.artery.ssl.keystore "default" "pekkoArteryKeystore" "context" $) }}
+              name: release-pekko-artery-keystore
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.pekko.remote.artery.ssl.keystore "default" "pekkoArteryKeystore" "context" $) }}
+              readOnly: true
+            - mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.remote.artery.ssl.truststore "default" "pekkoArteryTruststore" "context" $) }}
+              name: release-pekko-artery-truststore
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.pekko.remote.artery.ssl.truststore "default" "pekkoArteryTruststore" "context" $) }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.pekko.management.ssl.enabled }}
+            - mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.management.ssl.keystore "default" "pekkoManagementKeystore" "context" $) }}
+              name: release-pekko-management-keystore
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.pekko.management.ssl.keystore "default" "pekkoManagementKeystore" "context" $) }}
+              readOnly: true
+            - mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.pekko.management.ssl.truststore "default" "pekkoManagementTruststore" "context" $) }}
+              name: release-pekko-management-truststore
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.pekko.management.ssl.truststore "default" "pekkoManagementTruststore" "context" $) }}
+              readOnly: true
+            {{- end }}
             {{- range $path := .Values.persistence.emptyDirPaths }}
             - name: empty-dir
               mountPath: {{ $path }}
@@ -456,6 +508,22 @@ spec:
         - name: release-truststore
           secret:
             secretName: {{ include "render.secret-name" (dict "value" .Values.truststore.truststore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        {{- end }}
+        {{- if .Values.pekko.remote.artery.ssl.enabled }}
+        - name: release-pekko-artery-keystore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.pekko.remote.artery.ssl.keystore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        - name: release-pekko-artery-truststore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.pekko.remote.artery.ssl.truststore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        {{- end }}
+        {{- if .Values.pekko.management.ssl.enabled }}
+        - name: release-pekko-management-keystore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.pekko.management.ssl.keystore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        - name: release-pekko-management-truststore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.pekko.management.ssl.truststore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
         {{- end }}
         {{- if .Values.ssl.enabled }}
         - name: http-ssl-keystore
