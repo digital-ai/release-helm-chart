@@ -108,7 +108,7 @@ hooks:
     image:
       registry: docker.io
       repository: bitnami/kubectl
-      tag: 1.28.15-debian-12-r1
+      tag: 1.32.2-debian-12-r3
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -212,7 +212,7 @@ hooks:
     image:
       registry: docker.io
       repository: bitnami/kubectl
-      tag: 1.28.15-debian-12-r1
+      tag: 1.32.2-debian-12-r3
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1516,7 +1516,7 @@ volumePermissions:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 12-debian-12-r31
+    tag: 12-debian-12-r39
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -1652,7 +1652,7 @@ nginx-ingress-controller:
   defaultBackend:
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
-      tag: 1.26.2-debian-12-r8
+      tag: 1.26.2-debian-12-r10
   ## @extra nginx-ingress-controller.extraArgs Additional command line arguments to pass to nginx-ingress-controller
   ## E.g. to specify the default SSL certificate you can use
   ## extraArgs:
@@ -1808,7 +1808,7 @@ postgresql:
     enabled: true
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
-      tag: 12-debian-12-r31
+      tag: 12-debian-12-r39
 
 ## @section RabbitMQ
 ##
@@ -1936,7 +1936,7 @@ rabbitmq:
     enabled: true
     ## @param rabbitmq.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
-      tag: 12-debian-12-r31
+      tag: 12-debian-12-r39
 
     ## Init container' Security Context
     ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
