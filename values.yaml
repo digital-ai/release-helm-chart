@@ -54,7 +54,11 @@ useIpAsHostname: false
 ## @param forceRemoveMissingTypes Force removal of the missing types.
 ##
 forceRemoveMissingTypes: false
+
+## @param cluster.node.datacenter The datacenter name that node belongs to.
 ## @param cluster.mode This is to specify if the HA setup is needed and to specify the HA mode. Possible values: "default", "hot-standby", "full"
+## @param cluster.manager This is to specify the manager for the cluster. Possible values are xlr-legacy and xlr-pekko-native. Each defines different discovery and downing strategies.
+## @param cluster.name This is to specify the cluster name.
 ##
 cluster:
   node:
