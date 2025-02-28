@@ -30,16 +30,16 @@ dependencies:
     condition: haproxy-ingress.install
 
   - name: nginx-ingress-controller
-    version: 11.3.10
+    version: 11.6.10
     repository: "https://charts.bitnami.com/bitnami"
     condition: nginx-ingress-controller.install
 
   - name: postgresql
-    version: 16.2.2
+    version: 16.4.14
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.install
 
   - name: rabbitmq
-    version: 15.1.0
+    version: 15.3.3
     repository: "https://charts.bitnami.com/bitnami"
     condition: rabbitmq.install
