@@ -846,7 +846,7 @@ publishing {
 
     repositories {
         maven {
-            url = uri("${project.property("nexusBaseUrl")}/repositories/releases")
+            url = uri("${project.property("nexusBaseUrl")}/repositories/digitalai-public")
             credentials {
                 username = project.property("nexusUserName").toString()
                 password = project.property("nexusPassword").toString()
