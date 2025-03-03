@@ -369,7 +369,7 @@ tasks {
     register<Exec>("buildReadmeDocker") {
         group = "readme"
         workingDir(layout.projectDirectory)
-        commandLine("docker", "run", "--rm", "-v", ".:/app/helm", "-w", "/app/helm", "xldevdocker/readme-generator-for-helm:latest", 
+        commandLine("docker", "run", "--rm", "-v", ".:/app/helm", "-w", "/app/helm", "xldevdocker/readme-generator-for-helm:latest",
             "readme-generator", "--readme", "README.md", "--values", "values.yaml")
 
         doLast {
