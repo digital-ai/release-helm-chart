@@ -35,11 +35,11 @@ dependencies:
     condition: nginx-ingress-controller.install
 
   - name: postgresql
-    version: 15.5.14
+    version: 16.4.14
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.install
 
   - name: rabbitmq
-    version: 14.4.6
+    version: 15.3.3
     repository: "https://charts.bitnami.com/bitnami"
     condition: rabbitmq.install

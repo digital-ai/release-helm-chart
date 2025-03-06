@@ -24,6 +24,6 @@ postgresql:
       size: 100Mi
 
 rabbitmq:
-  replicaCount: 1
+  replicaCount: 3
   persistence:
     size: 100Mi
