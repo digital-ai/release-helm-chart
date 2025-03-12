@@ -205,7 +205,11 @@ spec:
             - name: ADMIN_PASSWORD
               {{- include "render.value-secret" (dict  "value" (include "release.secretPassword" .) "source" .Values.auth.adminPassword "sourceEnabled" true "defaultName" (include "common.names.fullname" .) "defaultKey" "releasePassword" "default" true "context" $ ) | nindent 14 }}
             - name: XL_CLUSTER_MODE
-              value: {{ .Values.clusterMode }}
+              value: {{ .Values.cluster.mode | quote }}
+            - name: XLR_CLUSTER_MANAGER
+              value: {{ .Values.cluster.manager | quote }}
+            - name: XLR_CLUSTER_NAME
+              value: {{ .Values.cluster.name | quote }}
             - name: FORCE_UPGRADE
               value: {{ .Values.forceUpgrade | quote }}
             - name: ENABLE_EMBEDDED_QUEUE
