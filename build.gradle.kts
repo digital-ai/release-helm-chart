@@ -557,6 +557,10 @@ tasks {
                     "-e", "s#\${CURRENT_TIME}#$currentTime#g",
                     targetCsvFile)
             }
+            exec {
+                workingDir(buildXlrDir)
+                commandLine("$operatorFolder/scripts/generate_skip_versions.sh", releasedVersion, targetCsvFile)
+            }
         }
         doLast {
             // bundle.Dockerfile -> bundle.Dockerfile
