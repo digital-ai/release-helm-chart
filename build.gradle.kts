@@ -708,7 +708,7 @@ tasks {
     val operatorChartDir = layout.buildDirectory.dir("xlr/helm-charts/digitalai-release/charts")
 
     // postgresql
-    val postgresqlSubchart = "postgresql-16.4.14.tgz"
+    val postgresqlSubchart = "postgresql-16.4.16.tgz"
     val postgresqlOperatorChart = operatorChartDir.get().file(postgresqlSubchart)
 
     register<Exec>("hotfixPostgresqlOperatorChart") {
