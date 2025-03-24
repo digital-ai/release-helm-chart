@@ -80,6 +80,9 @@ rules:
       - patch
       - update
       - watch
+
+#+kubebuilder:scaffold:rules
+
   - verbs:
       - create
     apiGroups:
@@ -93,8 +96,6 @@ rules:
       - ''
     resources:
       - pods/log
-
-#+kubebuilder:scaffold:rules
 
   ##
   ## Manual rules for xld.digital.ai/v1alpha1, Kind: DigitalaiDeploy
