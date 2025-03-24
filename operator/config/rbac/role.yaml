@@ -13,7 +13,6 @@ rules:
       - namespaces
     verbs:
       - get
-      - list
   # We need to manage Helm release secrets
   - apiGroups:
       - ""
@@ -83,6 +82,16 @@ rules:
 
 #+kubebuilder:scaffold:rules
 
+  ##
+  ## Manual rules for xld.digital.ai/v1alpha1, Kind: DigitalaiDeploy
+  ##
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+      - list
   - verbs:
       - create
     apiGroups:
@@ -96,10 +105,6 @@ rules:
       - ''
     resources:
       - pods/log
-
-  ##
-  ## Manual rules for xld.digital.ai/v1alpha1, Kind: DigitalaiDeploy
-  ##
   - apiGroups:
       - ""
     resources:
