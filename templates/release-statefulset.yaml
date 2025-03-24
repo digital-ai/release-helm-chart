@@ -253,7 +253,7 @@ spec:
             {{- end }}
             {{- end }}
             - name: XL_METRICS_ENABLED
-              value: {{ .Values.metrics.enabled | quote }}
+              value: {{ .Values.metrics.jmx.enabled | quote }}
             - name: GENERATE_XL_CONFIG
               value: {{ .Values.generateXlConfig | quote }}
             - name: USE_IP_AS_HOSTNAME

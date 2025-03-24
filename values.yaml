@@ -508,11 +508,124 @@ networkPolicy:
 ## Metrics
 ##
 metrics:
-  ## @param metrics.enabled Enable exposing Release metrics to be gathered.
-  ## Flag to expose internal and system metrics over Java Management Extensions (JMX).
-  ## This is to enable the use of monitoring systems that can read JMX data, with XL Products.
-  ##
-  enabled: false
+  jmx: 
+    ## @param metrics.jmx.enabled Enable exposing Release metrics to be gathered.
+    ## Flag to expose internal and system metrics over Java Management Extensions (JMX).
+    ## This is to enable the use of monitoring systems that can read JMX data, with XL Products.
+    ##
+    enabled: false
+  prometheus:
+    ## @param metrics.prometheus.enabled Enable exposing Release metrics to be gathered by Prometheus
+    ##
+    enabled: false
+    ## Prometheus pod annotations
+    ## @param metrics.prometheus.podAnnotations [object] Annotations for enabling prometheus to access the metrics endpoint
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "{{ .Values.service.ports.metrics }}"
+    ## Prometheus Service Monitor
+    ## ref: https://github.com/coreos/prometheus-operator
+    ##
+    serviceMonitor:
+      ## @param metrics.prometheus.serviceMonitor.enabled Create ServiceMonitor Resource for scraping metrics using PrometheusOperator
+      ##
+      enabled: false
+      ## @param metrics.prometheus.serviceMonitor.namespace Specify the namespace in which the serviceMonitor resource will be created
+      ##
+      namespace: ""
+      ## @param metrics.prometheus.serviceMonitor.interval Specify the interval at which metrics should be scraped
+      ##
+      interval: 30s
+      ## @param metrics.prometheus.serviceMonitor.scrapeTimeout Specify the timeout after which the scrape is ended
+      ## e.g:
+      ## scrapeTimeout: 30s
+      ##
+      scrapeTimeout: ""
+      ## @param metrics.prometheus.serviceMonitor.jobLabel The name of the label on the target service to use as the job name in prometheus.
+      ##
+      jobLabel: ""
+      ## @param metrics.prometheus.serviceMonitor.relabelings RelabelConfigs to apply to samples before scraping.
+      ##
+      relabelings: []
+      ## @param metrics.prometheus.serviceMonitor.metricRelabelings MetricsRelabelConfigs to apply to samples before ingestion.
+      ##
+      metricRelabelings: []
+      ## @param metrics.prometheus.serviceMonitor.honorLabels honorLabels chooses the metric's labels on collisions with target labels
+      ##
+      honorLabels: false
+      ## @param metrics.prometheus.serviceMonitor.targetLabels Used to keep given service's labels in target
+      ## e.g:
+      ## - app.kubernetes.io/name
+      ##
+      targetLabels: {}
+      ## @param metrics.prometheus.serviceMonitor.podTargetLabels Used to keep given pod's labels in target
+      ## e.g:
+      ## - app.kubernetes.io/name
+      ##
+      podTargetLabels: {}
+      ## @param metrics.prometheus.serviceMonitor.path Define the path used by ServiceMonitor to scrap metrics
+      ## Release has default /s/actuator/prometheus.
+      ##
+      path: "/s/actuator/prometheus"
+      ## @param metrics.prometheus.serviceMonitor.params Define the HTTP URL parameters used by ServiceMonitor
+      ##
+      params: {}
+      ## @param metrics.prometheus.serviceMonitor.selector ServiceMonitor selector labels
+      ## ref: https://github.com/bitnami/charts/tree/main/bitnami/prometheus-operator#prometheus-configuration
+      ##
+      ## selector:
+      ##   prometheus: my-prometheus
+      ##
+      selector:
+        service-type: normal
+      ## @param metrics.prometheus.serviceMonitor.labels Extra labels for the ServiceMonitor
+      ##
+      labels: {}
+      ## @param metrics.prometheus.serviceMonitor.annotations Extra annotations for the ServiceMonitor
+      ##
+      annotations: {}
+      ## @param metrics.prometheus.serviceMonitor.basicAuth Basic auth configuration for the Release, default are used admin username and password
+      basicAuth:
+        username:
+          name: '{{ template "common.names.fullname" . }}'
+          key: releaseUsername
+          optional: false
+        password: 
+          name: '{{ template "common.names.fullname" . }}'
+          key: releasePassword
+          optional: false
+    ## Custom PrometheusRule to be defined
+    ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
+    ## ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions
+    ##
+    rule:
+      ## @param metrics.prometheus.rule.enabled Set this to true to create prometheusRules for Prometheus operator
+      ##
+      enabled: false
+      ## @param metrics.prometheus.rule.additionalLabels Additional labels that can be used so prometheusRules will be discovered by Prometheus
+      ##
+      additionalLabels: {}
+      ## @param metrics.prometheus.rule.namespace namespace where prometheusRules resource should be created
+      ##
+      namespace: ""
+      ## List of rules, used as template by Helm.
+      ## @param metrics.prometheus.rule.rules List of rules, used as template by Helm.
+      ## These are just examples rules inspired from https://awesome-prometheus-alerts.grep.to/rules.html
+      ## rules:
+      ##   - alert: TooManyConnections
+      ##     expr: jetty_connections_max_connections{service="{{ template "common.names.fullname" . }}"} > 1000
+      ##     for: 5m
+      ##     labels:
+      ##       severity: warning
+      ##     annotations:
+      ##       summary: Too many connections (instance {{ "{{ $labels.instance }}" }})
+      ##       description: |
+      ##           Release instance has too many connections (> 1000)
+      ##           VALUE = {{ "{{ $value }}" }}\n  LABELS: {{ "{{ $labels }}" }}
+      ##
+      rules: []
 
 ## @section OIDC parameters
 ##
@@ -965,6 +1078,8 @@ configuration:
         {{- end }}
       }
 
+      management.endpoint.prometheus.enabled = {{ .Values.metrics.prometheus.enabled | default false }}
+      
 ## @param extraConfiguration Configuration file content: extra configuration to be appended to Release configuration
 ## Use this instead of `configuration` to add more configuration
 ##
@@ -1391,7 +1506,8 @@ service:
   clusterIP: ""
   ## @param service.labels Service labels. Evaluated as a template
   ##
-  labels: { }
+  labels:
+    service-type: normal
   ## @param service.annotations Service annotations. Evaluated as a template
   ## Example:
   ## annotations:
