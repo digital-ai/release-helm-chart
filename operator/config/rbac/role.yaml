@@ -13,6 +13,7 @@ rules:
       - namespaces
     verbs:
       - get
+      - list
   # We need to manage Helm release secrets
   - apiGroups:
       - ""

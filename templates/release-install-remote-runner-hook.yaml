@@ -57,7 +57,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: {{ template "release.serviceAccountName" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -85,6 +85,8 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      serviceAccount: {{ template "release.serviceAccountName" . }}
+      serviceAccountName: {{ template "release.serviceAccountName" . }}
       restartPolicy: Never
       {{- include "release.installReleaseRunner.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.podSecurityContext.enabled }}
