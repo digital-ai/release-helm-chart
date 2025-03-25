@@ -88,6 +88,26 @@ rules:
   - apiGroups:
       - ""
     resources:
+      - namespaces
+    verbs:
+      - get
+      - list
+  - verbs:
+      - create
+    apiGroups:
+      - ''
+    resources:
+      - pods/exec
+  - verbs:
+      - get
+      - list
+    apiGroups:
+      - ''
+    resources:
+      - pods/log
+  - apiGroups:
+      - ""
+    resources:
       - serviceaccounts
     verbs:
       - create

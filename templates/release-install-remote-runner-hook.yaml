@@ -19,13 +19,25 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["create", "update", "patch", "delete", "list", "get"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: [""]
     resources: ["pods/exec"]
     verbs: ["create"]
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "serviceaccounts", "services"]
+    verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["create", "delete", "get", "list", "watch"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["rolebindings", "roles"]
+    verbs: ["create", "delete", "get", "list", "watch"]
+  - apiGroups: ["xlr.digital.ai"]
+    resources: ["digitalaireleases", "digitalaireleases/status", "digitalaireleases/finalizers"]
+    verbs: ["get", "list", "watch"]
 ---
 kind: RoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
@@ -42,7 +54,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: {{ template "release.serviceAccountName" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -70,6 +82,8 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      serviceAccount: {{ template "release.serviceAccountName" . }}
+      serviceAccountName: {{ template "release.serviceAccountName" . }}
       restartPolicy: Never
       {{- include "release.installReleaseRunner.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.podSecurityContext.enabled }}
