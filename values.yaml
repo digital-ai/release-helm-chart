@@ -68,54 +68,51 @@ cluster:
   name: xl-release_cluster
   management:
     ssl:
+      ## @param cluster.management.ssl.enabled Enable SSL on pekko management
       enabled: false
-      ## @param ssl.keystorePassword Keystore password with SSL key.
+      ## @param cluster.management.ssl.keyPassword Key password for SSL on pekko management.
       keyPassword:
+      ## @param cluster.management.ssl.keystorePassword Keystore password for SSL on pekko management.
       keystorePassword:
-      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      ## @param cluster.management.ssl.keystoreType Keystore type, options pkcs12 or jks.
       keystoreType: "pkcs12"
-      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      ## @param cluster.management.ssl.keystore Keystore content in base64 format or it can reference the existing secret.
       keystore: {}
-
-      ## @param ssl.keystorePassword Keystore password with SSL key.
+      ## @param cluster.management.ssl.truststorePassword Truststore password with SSL key.
       truststorePassword:
-      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      ## @param cluster.management.ssl.truststoreType Truststore type, options pkcs12 or jks.
       truststoreType: "pkcs12"
-      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      ## @param cluster.management.ssl.truststore Truststore content in base64 format or it can reference the existing secret.
       truststore: {}
 
   remote:      
     sslEngine:
+      ## @param cluster.remote.sslEngine.enabled Enable SSL on pekko management
       enabled: false
+      ## @param cluster.remote.sslEngine.hostnameVerification Verfication of hostname to ensure that the client is talking to the correct server and has not been redirected by a man in the middle attack.
       hostnameVerification: false
-      requireMutualAuthentication: false  
+      ## @param cluster.remote.sslEngine.requireMutualAuthentication Enable mutual auth to ensure only legitimate users are connected to the network.
+      requireMutualAuthentication: false
+      ## @param cluster.remote.sslEngine.enabledAlgorithms List of recommended algorithms to use with TLS 1.2
       enabledAlgorithms: 
       - "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256"
       - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
       - "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
       - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
       - "TLS_RSA_WITH_AES_128_CBC_SHA"
-      ## @param ssl.keystorePassword Keystore password with SSL key.
+      ## @param cluster.remote.sslEngine.keyPassword Key password for Pekko remote SSLEngine.
       keyPassword:
+      ## @param cluster.remote.sslEngine.keystorePassword Keystore password for Pekko remote SSLEngine.
       keystorePassword:
-      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      ## @param cluster.remote.sslEngine.keystoreType Keystore type, options pkcs12 or jks.
       keystoreType: "pkcs12"
-      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      ## @param cluster.remote.sslEngine.keystore Keystore content in base64 format or it can reference the existing secret.
       keystore: {}
-
-      ## @param ssl.keystorePassword Keystore password with SSL key.
+      ## @param cluster.remote.sslEngine.truststorePassword Truststore password.
       truststorePassword:
-      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      ## @param cluster.remote.sslEngine.truststoreType Truststore type, options pkcs12 or jks.
       truststoreType: "pkcs12"
-      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
-      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      ## @param cluster.remote.sslEngine.truststore Truststore content in base64 format or it can reference the existing secret.
       truststore: {}
 
 ## @param forceUpgrade It can be used to perform an upgrade in non-interactive mode by passing flag -force-upgrades while starting a service.
@@ -623,7 +620,8 @@ metrics:
       ## @param metrics.prometheus.serviceMonitor.params Define the HTTP URL parameters used by ServiceMonitor
       ##
       params: {}
-      ## @param metrics.prometheus.serviceMonitor.selector ServiceMonitor selector labels
+      ## @extra metrics.prometheus.serviceMonitor.selector ServiceMonitor selector labels
+      ## @skip metrics.prometheus.serviceMonitor.selector
       ## ref: https://github.com/bitnami/charts/tree/main/bitnami/prometheus-operator#prometheus-configuration
       ##
       ## selector:
@@ -637,7 +635,8 @@ metrics:
       ## @param metrics.prometheus.serviceMonitor.annotations Extra annotations for the ServiceMonitor
       ##
       annotations: {}
-      ## @param metrics.prometheus.serviceMonitor.basicAuth Basic auth configuration for the Release, default are used admin username and password
+      ## @extra metrics.prometheus.serviceMonitor.basicAuth Basic auth configuration for the Release, default are used admin username and password
+      ## @skip metrics.prometheus.serviceMonitor.basicAuth
       basicAuth:
         username:
           name: '{{ template "common.names.fullname" . }}'
@@ -1601,7 +1600,8 @@ service:
   ## clusterIP: None
   ##
   clusterIP: ""
-  ## @param service.labels Service labels. Evaluated as a template
+  ## @extra service.labels Service labels. Evaluated as a template
+  ## @skip service.labels
   ##
   labels:
     service-type: normal
