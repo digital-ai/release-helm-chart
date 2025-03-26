@@ -332,6 +332,22 @@ spec:
               value: "{{- include "common.tplvalues.render" (dict "value" .Values.jvmArgs "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.truststore.params "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.debugMode.remoteJvmParams "context" $) }}"
             - name: NETWORK_ADDRESS_CACHE_TTL
               value: {{ (index .Values.jvm.options "networkaddress.cache.ttl") | quote }}
+            {{- if .Values.cluster.remote.sslEngine.enabled }}
+            - name: CLUSTER_REMOTE_SSL_ENGINE_KEY_PASSWORD
+              {{- include "render.value-secret" (dict  "value" .Values.cluster.remote.sslEngine.keyPassword "defaultName" (include "common.names.fullname" .) "defaultKey" "clusterRemoteSslEngineKeyPassword" "context" $ ) | nindent 14 }}
+            - name: CLUSTER_REMOTE_SSL_ENGINE_KEYSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" .Values.cluster.remote.sslEngine.keystorePassword "defaultName" (include "common.names.fullname" .) "defaultKey" "clusterRemoteSslEngineKeystorePassword" "context" $ ) | nindent 14 }}
+            - name: CLUSTER_REMOTE_SSL_ENGINE_TRUSTSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" .Values.cluster.remote.sslEngine.truststorePassword "defaultName" (include "common.names.fullname" .) "defaultKey" "clusterRemoteSslEngineTruststorePassword" "context" $ ) | nindent 14 }}
+            {{- end }}
+            {{- if .Values.cluster.management.ssl.enabled }}
+            - name: CLUSTER_MANAGEMENT_SSL_KEY_PASSWORD
+              {{- include "render.value-secret" (dict  "value" .Values.cluster.management.ssl.keyPassword "defaultName" (include "common.names.fullname" .) "defaultKey" "clusterManagementSslKeyPassword" "context" $ ) | nindent 14 }}
+            - name: CLUSTER_MANAGEMENT_SSL_KEYSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" .Values.cluster.management.ssl.keystorePassword "defaultName" (include "common.names.fullname" .) "defaultKey" "clusterManagementSslKeystorePassword" "context" $ ) | nindent 14 }}
+            - name: CLUSTER_MANAGEMENT_SSL_TRUSTSTORE_PASSWORD
+              {{- include "render.value-secret" (dict  "value" .Values.cluster.management.ssl.truststorePassword "defaultName" (include "common.names.fullname" .) "defaultKey" "clusterManagementSslTruststorePassword" "context" $ ) | nindent 14 }}
+            {{- end }}              
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -431,6 +447,26 @@ spec:
               subPath: {{ include "secrets.key" (dict "secretRef" .Values.ssl.keystore "default" (printf "ssl_keystore.%s" .Values.ssl.keystoreType) "context" $) }}
               readOnly: true
             {{- end }}
+            {{- if .Values.cluster.remote.sslEngine.enabled }}
+            - name: cluster-remote-keystore
+              mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.keystore "default" (printf "cluster_remote_keystore.%s" .Values.cluster.remote.sslEngine.keystoreType) "context" $) }}
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.keystore "default" (printf "cluster_remote_keystore.%s" .Values.cluster.remote.sslEngine.keystoreType) "context" $) }}
+              readOnly: true
+            - name: cluster-remote-truststore
+              mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.truststore "default" (printf "cluster_remote_truststore.%s" .Values.cluster.remote.sslEngine.truststoreType) "context" $) }}
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.truststore "default" (printf "cluster_remote_truststore.%s" .Values.cluster.remote.sslEngine.truststoreType) "context" $) }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.cluster.management.ssl.enabled }}
+            - name: cluster-management-keystore
+              mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.keystore "default" (printf "cluster_management_keystore.%s" .Values.cluster.management.ssl.keystoreType) "context" $) }}
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.keystore "default" (printf "cluster_management_keystore.%s" .Values.cluster.management.ssl.keystoreType) "context" $) }}
+              readOnly: true
+            - name: cluster-management-truststore
+              mountPath: /opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.truststore "default" (printf "cluster_management_truststore.%s" .Values.cluster.management.ssl.truststoreType) "context" $) }}
+              subPath: {{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.truststore "default" (printf "cluster_management_truststore.%s" .Values.cluster.management.ssl.truststoreType) "context" $) }}
+              readOnly: true
+            {{- end }}
             {{- if .Values.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -473,6 +509,22 @@ spec:
         - name: http-ssl-keystore
           secret:
             secretName: {{ include "render.secret-name" (dict "value" .Values.ssl.keystore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        {{- end }}
+        {{- if .Values.cluster.remote.sslEngine.enabled }}
+        - name: cluster-remote-keystore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.cluster.remote.sslEngine.keystore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        - name: cluster-remote-truststore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.cluster.remote.sslEngine.truststore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        {{- end }}
+        {{- if .Values.cluster.management.ssl.enabled }}
+        - name: cluster-management-keystore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.cluster.management.ssl.keystore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
+        - name: cluster-management-truststore
+          secret:
+            secretName: {{ include "render.secret-name" (dict "value" .Values.cluster.management.ssl.truststore "defaultName" (include "common.names.fullname" .) "context" $ ) }}
         {{- end }}
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $)  | nindent 8 }}
