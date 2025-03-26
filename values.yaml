@@ -2053,7 +2053,7 @@ nginx-ingress-controller:
   install: false
   ## @param nginx-ingress-controller.image.tag NGINX Ingress Controller image tag (immutable tags are recommended)
   image:
-    tag: 1.12.0-debian-12-r14
+    tag: 1.12.1-debian-12-r0
   ## Default 404 backend
   ##
   defaultBackend:
