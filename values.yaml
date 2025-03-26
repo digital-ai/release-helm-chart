@@ -66,6 +66,57 @@ cluster:
   mode: full
   manager: xlr-legacy
   name: xl-release_cluster
+  management:
+    ssl:
+      enabled: false
+      ## @param ssl.keystorePassword Keystore password with SSL key.
+      keyPassword:
+      keystorePassword:
+      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      keystoreType: "pkcs12"
+      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      keystore: {}
+
+      ## @param ssl.keystorePassword Keystore password with SSL key.
+      truststorePassword:
+      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      truststoreType: "pkcs12"
+      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      truststore: {}
+
+  remote:      
+    sslEngine:
+      enabled: false
+      hostnameVerification: false
+      requireMutualAuthentication: false  
+      enabledAlgorithms: 
+      - "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256"
+      - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      - "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+      - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+      - "TLS_RSA_WITH_AES_128_CBC_SHA"
+      ## @param ssl.keystorePassword Keystore password with SSL key.
+      keyPassword:
+      keystorePassword:
+      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      keystoreType: "pkcs12"
+      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      keystore: {}
+
+      ## @param ssl.keystorePassword Keystore password with SSL key.
+      truststorePassword:
+      ## @param ssl.keystoreType Keystore type, options pkcs12 or jks.
+      truststoreType: "pkcs12"
+      ## @extra ssl.keystore Keystore content in base64 format or it can reference the existing secret.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.name Name of the secret where the keystore was stored.
+      ## @param ssl.keystore.valueFrom.secretKeyRef.key Name of the key in the secret where the keystore was stored.
+      truststore: {}
 
 ## @param forceUpgrade It can be used to perform an upgrade in non-interactive mode by passing flag -force-upgrades while starting a service.
 ##
@@ -907,7 +958,53 @@ configuration:
               downing-provider-class = {{.Values.storage.reportingEngine.downingProviderClass | quote}}
             }
             {{- end }}
+
+            {{- if .Values.cluster.remote.sslEngine.enabled }}
+            remote {
+              artery {  
+                ssl {  
+                  config-ssl-engine {  
+                    enabled-algorithms = [
+                      {{- $last := sub (len .Values.cluster.remote.sslEngine.enabledAlgorithms) 1 }}
+                      {{ range $index, $v := .Values.cluster.remote.sslEngine.enabledAlgorithms }}
+                      {{ $v | quote }}{{ if ne $index $last }},{{ end }}
+                      {{- end }}
+                    ]  
+                    key-password = "${?CLUSTER_REMOTE_SSL_ENGINE_KEY_PASSWORD}"  
+                    key-store = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.keystore "default" (printf "cluster_remote_keystore.%s" .Values.cluster.remote.sslEngine.keystoreType) "context" $) }}"  
+                    key-store-password = "${?CLUSTER_REMOTE_SSL_ENGINE_KEYSTORE_PASSWORD}"  
+                    trust-store = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.truststore "default" (printf "cluster_remote_truststore.%s" .Values.cluster.remote.sslEngine.truststoreType) "context" $) }}"  
+                    trust-store-password = "${?CLUSTER_REMOTE_SSL_ENGINE_TRUSTSTORE_PASSWORD}"  
+                    hostname-verification = {{ if .Values.cluster.remote.sslEngine.hostnameVerification }}on{{ else }}off{{ end }}
+                    require-mutual-authentication = {{ if .Values.cluster.remote.sslEngine.requireMutualAuthentication }}on{{ else }}off{{ end }}  
+                  }  
+                }  
+                transport = tls-tcp  
+              }  
+            }
+            {{- end }}
           }
+          {{- if .Values.cluster.management.ssl.enabled }}
+          xlr-pekko-native {
+            pekko {
+              management {
+                http {  
+                  route-providers-read-only = true  
+                }  
+                ssl {  
+                  enabled = true
+                  keyPassword = "${?CLUSTER_MANAGEMENT_SSL_KEY_PASSWORD}"  
+                  keyStore = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.keystore "default" (printf "cluster_management_keystore.%s" .Values.cluster.management.ssl.keystoreType) "context" $) }}"  
+                  keyStorePassword = "${?CLUSTER_MANAGEMENT_SSL_KEYSTORE_PASSWORD}"  
+                  keystoreType = {{ .Values.cluster.management.ssl.keystoreType }}  
+                  trustStore = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.truststore "default" (printf "cluster_management_truststore.%s" .Values.cluster.management.ssl.truststoreType) "context" $) }}"  
+                  trustStorePassword = "${?CLUSTER_MANAGEMENT_SSL_TRUSTSTORE_PASSWORD}"  
+                  trustStoreType = {{ .Values.cluster.management.ssl.truststoreType }}  
+                }  
+              }  
+            }
+          }
+          {{- end }}
         }
       
         server {
