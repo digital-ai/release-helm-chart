@@ -47,6 +47,7 @@ val operatorSdkVersion = properties["operatorSdkVersion"]
 val openshiftPreflightVersion = properties["openshiftPreflightVersion"]
 val kustomizeVersion = properties["kustomizeVersion"]
 val operatorBundleChannels = properties["operatorBundleChannels"]
+val operatorBundleDefaultChannel = properties["operatorBundleDefaultChannel"]
 val os = detectOs()
 val arch = detectHostArch()
 val currentTime = Instant.now().toString()
