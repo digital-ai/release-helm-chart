@@ -54,7 +54,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 subjects:
   - kind: ServiceAccount
-    name: {{ template "release.serviceAccountName" . }}
+    name: {{ if eq .Values.k8sSetup.platform "OpenshiftCertified" }}{{ template "release.serviceAccountName" . }}{{ else }}default{{ end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -82,8 +82,8 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccount: {{ template "release.serviceAccountName" . }}
-      serviceAccountName: {{ template "release.serviceAccountName" . }}
+      serviceAccount: {{ if eq .Values.k8sSetup.platform "OpenshiftCertified" }}{{ template "release.serviceAccountName" . }}{{ else }}default{{ end }}
+      serviceAccountName: {{ if eq .Values.k8sSetup.platform "OpenshiftCertified" }}{{ template "release.serviceAccountName" . }}{{ else }}default{{ end }}
       restartPolicy: Never
       {{- include "release.installReleaseRunner.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.podSecurityContext.enabled }}
