@@ -17,7 +17,7 @@ fi
 
 opm index add \
   --bundles docker.io/$RELEASE_REGISTRY/release-operator-bundle:$RELEASE_EXPLICIT \
-  --tag docker.io/$RELEASE_REGISTRY/release-operator-index:25.1 \
+  --tag docker.io/$RELEASE_REGISTRY/release-operator-index:25.3 \
   --generate
-docker build -f index.Dockerfile -t docker.io/$RELEASE_REGISTRY/release-operator-index:25.1 .
-docker push docker.io/$RELEASE_REGISTRY/release-operator-index:25.1
+docker build -f index.Dockerfile -t docker.io/$RELEASE_REGISTRY/release-operator-index:25.3 .
+docker push docker.io/$RELEASE_REGISTRY/release-operator-index:25.3
