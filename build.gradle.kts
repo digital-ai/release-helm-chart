@@ -1,10 +1,3 @@
-import com.github.gradle.node.yarn.task.YarnTask
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
-import org.apache.commons.lang.SystemUtils.*
-import java.time.Instant
-
 buildscript {
     repositories {
         mavenLocal()
@@ -28,13 +21,21 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "2.1.20"
 
     id("com.github.node-gradle.node") version "7.0.2"
     id("idea")
     id("nebula.release") version (properties["nebulaReleasePluginVersion"] as String)
     id("maven-publish")
+    id("de.undercouch.download") version "5.6.0"
 }
+
+import com.github.gradle.node.yarn.task.YarnTask
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import org.apache.commons.lang.SystemUtils.*
+import java.time.Instant
+import de.undercouch.gradle.tasks.download.Download
 
 apply(plugin = "ai.digital.gradle-commit")
 apply(plugin = "com.xebialabs.dependency")
