@@ -5,12 +5,12 @@ input_version=$1
 csv_file=$2
 
 # Extract major, minor, and patch versions
-IFS='.' read -r major minor patch beta <<< "$input_version"
+IFS='.' read -r major minor patch <<< "$input_version"
 
-# Generate versions from 0 to beta-1
+# Generate versions from 0 to patch-1
 versions=""
-for ((i=0; i<beta; i++)); do
-  versions+="digitalai-release-operator.v$major.$minor.$patch.$i"$'\n'
+for ((i=0; i<patch; i++)); do
+  versions+="digitalai-release-operator.v$major.$minor.$i"$'\n'
 done
 
 # Convert versions to a YAML list format
