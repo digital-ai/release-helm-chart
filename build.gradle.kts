@@ -1,3 +1,10 @@
+import com.github.gradle.node.yarn.task.YarnTask
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import org.apache.commons.lang.SystemUtils.*
+import java.time.Instant
+import de.undercouch.gradle.tasks.download.Download
+
 buildscript {
     repositories {
         mavenLocal()
@@ -30,33 +37,29 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 }
 
-import com.github.gradle.node.yarn.task.YarnTask
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import org.apache.commons.lang.SystemUtils.*
-import java.time.Instant
-import de.undercouch.gradle.tasks.download.Download
-
 apply(plugin = "ai.digital.gradle-commit")
 apply(plugin = "com.xebialabs.dependency")
 
 group = "ai.digital.release.helm"
 project.defaultTasks = listOf("build")
 
+val languageLevel = properties["languageLevel"] as String
 val helmVersion = properties["helmVersion"]
 val operatorSdkVersion = properties["operatorSdkVersion"]
 val openshiftPreflightVersion = properties["openshiftPreflightVersion"]
 val kustomizeVersion = properties["kustomizeVersion"]
 val operatorBundleChannels = properties["operatorBundleChannels"]
 val operatorBundleDefaultChannel = properties["operatorBundleDefaultChannel"]
+val nodeVersion = properties["nodeVersion"] as String
+val yarnVersion = properties["yarnVersion"]
+
 val os = detectOs()
 val arch = detectHostArch()
 val currentTime = Instant.now().toString()
 val releaseRepository = System.getenv()["RELEASE_REGISTRY"] ?: "xebialabsunsupported"
 val dockerHubRepository = System.getenv()["DOCKER_HUB_REPOSITORY"] ?: releaseRepository
-val releasedVersion = System.getenv()["RELEASE_EXPLICIT"] ?: "25.3.0-${
-    LocalDateTime.now().format(DateTimeFormatter.ofPattern("Mdd.Hmm"))
-}"
+val releasedVersion = System.getenv()["RELEASE_EXPLICIT"] ?:
+    "${project.version}-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("Mdd.Hmm"))}"
 project.extra.set("releasedVersion", releasedVersion)
 val releasedAppVersion = System.getenv()["RELEASE_APP_EXPLICIT"] ?: releasedVersion
 project.extra.set("releasedAppVersion", releasedAppVersion)
@@ -119,8 +122,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.toVersion(languageLevel)
+    targetCompatibility = JavaVersion.toVersion(languageLevel)
     withSourcesJar()
     withJavadocJar()
 }
@@ -136,11 +139,11 @@ tasks.withType<AbstractPublishToMaven> {
 tasks {
 
     compileKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
+        kotlinOptions.jvmTarget = languageLevel
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
+        kotlinOptions.jvmTarget = languageLevel
     }
 
     val operatorImageUrl = "docker.io/$dockerHubRepository/release-operator:$releasedVersion"
@@ -862,8 +865,8 @@ publishing {
 }
 
 node {
-    version.set("20.14.0")
-    yarnVersion.set("1.22.22")
+    version.set(nodeVersion)
+    yarnVersion.set(yarnVersion)
     download.set(true)
 }
 
