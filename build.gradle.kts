@@ -281,7 +281,7 @@ tasks {
 
     register<Exec>("runHelmLint") {
         group = "helm-test"
-        dependsOn("prepareHelmDeps", "prepareHelmDepsHotfix")
+        dependsOn("prepareHelmDeps")
 
         workingDir(buildXlrOperatorDir)
         commandLine(helmCli, "lint", "-f", "../../../tests/values/basic.yaml")
@@ -293,7 +293,6 @@ tasks {
 
     register<Exec>("installHelmUnitTestPlugin") {
         group = "helm-test"
-        dependsOn("prepareHelmDepsHotfix")
 
         workingDir(buildXlrOperatorDir)
         commandLine(helmCli, "plugin", "list")
@@ -335,7 +334,7 @@ tasks {
 
     register<Exec>("buildHelmPackage") {
         group = "helm"
-        dependsOn("prepareHelmDepsHotfix")
+        dependsOn("prepareHelmDeps")
         workingDir(buildXlrDir)
         commandLine(helmCli, "package", "--app-version=$releasedAppVersion", project.name)
 
@@ -418,7 +417,7 @@ tasks {
 
     register<Exec>("buildOperatorImage") {
         group = "operator"
-        dependsOn("installKustomize", "buildOperatorApiHotfix", "downloadHelm")
+        dependsOn("installKustomize", "buildOperatorApi", "downloadHelm")
         workingDir(buildXlrDir)
         commandLine("make", "docker-build",
             "IMG=$operatorImageUrl", operatorSdkCliVar, kustomizeCliVar)
@@ -482,7 +481,7 @@ tasks {
 
     register<Exec>("buildOperatorBundle") {
         group = "operator-bundle"
-        dependsOn("installKustomize", "buildOperatorApiHotfix")
+        dependsOn("installKustomize", "buildOperatorApi")
         workingDir(buildXlrDir)
         commandLine("make", "bundle",
             "IMG=$operatorImageUrl", "BUNDLE_GEN_FLAGS=--overwrite --version=$releasedVersion --channels=$operatorBundleChannels --package=digitalai-release-operator --use-image-digests",
