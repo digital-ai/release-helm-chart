@@ -1,9 +1,9 @@
 import com.github.gradle.node.yarn.task.YarnTask
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
 import org.apache.commons.lang.SystemUtils.*
 import java.time.Instant
+import de.undercouch.gradle.tasks.download.Download
 
 buildscript {
     repositories {
@@ -28,12 +28,13 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "2.1.20"
 
     id("com.github.node-gradle.node") version "7.0.2"
     id("idea")
     id("nebula.release") version (properties["nebulaReleasePluginVersion"] as String)
     id("maven-publish")
+    id("de.undercouch.download") version "5.6.0"
 }
 
 apply(plugin = "ai.digital.gradle-commit")
@@ -42,20 +43,23 @@ apply(plugin = "com.xebialabs.dependency")
 group = "ai.digital.release.helm"
 project.defaultTasks = listOf("build")
 
+val languageLevel = properties["languageLevel"] as String
 val helmVersion = properties["helmVersion"]
 val operatorSdkVersion = properties["operatorSdkVersion"]
 val openshiftPreflightVersion = properties["openshiftPreflightVersion"]
 val kustomizeVersion = properties["kustomizeVersion"]
 val operatorBundleChannels = properties["operatorBundleChannels"]
 val operatorBundleDefaultChannel = properties["operatorBundleDefaultChannel"]
+val nodeVersion = properties["nodeVersion"] as String
+val yarnVersion = properties["yarnVersion"]
+
 val os = detectOs()
 val arch = detectHostArch()
 val currentTime = Instant.now().toString()
 val releaseRepository = System.getenv()["RELEASE_REGISTRY"] ?: "xebialabsunsupported"
 val dockerHubRepository = System.getenv()["DOCKER_HUB_REPOSITORY"] ?: releaseRepository
-val releasedVersion = System.getenv()["RELEASE_EXPLICIT"] ?: "25.3.0-${
-    LocalDateTime.now().format(DateTimeFormatter.ofPattern("Mdd.Hmm"))
-}"
+val releasedVersion = System.getenv()["RELEASE_EXPLICIT"] ?:
+    "${project.version}-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("Mdd.Hmm"))}"
 project.extra.set("releasedVersion", releasedVersion)
 val releasedAppVersion = System.getenv()["RELEASE_APP_EXPLICIT"] ?: releasedVersion
 project.extra.set("releasedAppVersion", releasedAppVersion)
@@ -118,8 +122,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.toVersion(languageLevel)
+    targetCompatibility = JavaVersion.toVersion(languageLevel)
     withSourcesJar()
     withJavadocJar()
 }
@@ -135,11 +139,11 @@ tasks.withType<AbstractPublishToMaven> {
 tasks {
 
     compileKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+        kotlinOptions.jvmTarget = languageLevel
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+        kotlinOptions.jvmTarget = languageLevel
     }
 
     val operatorImageUrl = "docker.io/$dockerHubRepository/release-operator:$releasedVersion"
@@ -697,6 +701,94 @@ tasks {
         dependsOn(named("docBuild"))
     }
 
+    register("prepareHelmDepsHotfix") {
+        group = "helm-hotfix"
+        dependsOn(
+            named("prepareHelmDeps")
+        )
+    }
+
+    // hotfix operator
+    val operatorChartDir = layout.buildDirectory.dir("xlr/helm-charts/digitalai-release/charts")
+
+    // postgresql
+    val postgresqlSubchart = "postgresql-16.6.6.tgz"
+    val postgresqlOperatorChart = operatorChartDir.get().file(postgresqlSubchart)
+
+    register<Exec>("hotfixPostgresqlOperatorChart") {
+        group = "operator-hotfix"
+        dependsOn(named("buildOperatorApi"))
+        doFirst {
+            copy {
+                from(tarTree(postgresqlOperatorChart))
+                into(operatorChartDir.get())
+            }
+            delete(postgresqlOperatorChart)
+        }
+        workingDir(operatorChartDir.get())
+        commandLine("yq", "-i",
+            ".volumePermissions.containerSecurityContext.seLinuxOptions=null", "postgresql/values.yaml")
+
+        doLast {
+            logger.lifecycle("Hotfix Postgresql operator helm chart")
+        }
+    }
+
+    register<Tar>("hotfixPostgresqlOperatorChartPackage") {
+        group = "operator-hotfix"
+        dependsOn(named("hotfixPostgresqlOperatorChart"))
+        from(operatorChartDir)
+        include("postgresql/**")
+        archiveFileName.set(postgresqlSubchart)
+        destinationDirectory.set(file(operatorChartDir))
+        compression = Compression.GZIP
+    }
+
+    // rabbitmq
+    val rabbitmqSubchart = "rabbitmq-15.5.3.tgz"
+    val rabbitmqOperatorChart = operatorChartDir.get().file(rabbitmqSubchart)
+
+    register<Exec>("hotfixRabbitmqOperatorChart") {
+        group = "operator-hotfix"
+        dependsOn(named("buildOperatorApi"))
+        doFirst {
+            copy {
+                from(tarTree(rabbitmqOperatorChart))
+                into(operatorChartDir.get())
+            }
+            delete(rabbitmqOperatorChart)
+        }
+        workingDir(operatorChartDir.get())
+        commandLine("yq", "-i",
+            ".volumePermissions.containerSecurityContext.seLinuxOptions=null", "rabbitmq/values.yaml")
+
+        doLast {
+            logger.lifecycle("Hotfix Rabbitmq operator helm chart")
+        }
+    }
+
+    register<Tar>("hotfixRabbitmqOperatorChartPackage") {
+        group = "operator-hotfix"
+        dependsOn(named("hotfixRabbitmqOperatorChart"))
+        from(operatorChartDir)
+        include("rabbitmq/**")
+        archiveFileName.set(rabbitmqSubchart)
+        destinationDirectory.set(file(operatorChartDir))
+        compression = Compression.GZIP
+    }
+
+    register("buildOperatorApiHotfix") {
+        group = "operator-hotfix"
+        dependsOn(
+            named("hotfixPostgresqlOperatorChartPackage"),
+            named("hotfixRabbitmqOperatorChartPackage"),
+            named("buildOperatorApi")
+        )
+        doLast {
+            delete(operatorChartDir.get().dir("postgresql"))
+        }
+    }
+
     register<Exec>("preflightCheckOperator") {
         group = "openshift-preflight"
         dependsOn(
@@ -772,8 +864,8 @@ publishing {
 }
 
 node {
-    version.set("20.14.0")
-    yarnVersion.set("1.22.22")
+    version.set(nodeVersion)
+    yarnVersion.set(yarnVersion)
     download.set(true)
 }
 
