@@ -3,6 +3,7 @@
 .gradle/
 charts
 build/
+buildSrc/.kotlin
 Chart.lock
 .DS_Store
 bin/
