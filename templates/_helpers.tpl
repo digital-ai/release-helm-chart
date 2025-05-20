@@ -8,10 +8,6 @@
 {{ include "postgresql.v1.service.port" (dict "Values" (dict "global" .Values.global "primary" .Values.postgresql.primary)) }}
 {{- end -}}
 
-{{- define "rabbitmq.subchart" -}}
-{{ include "common.names.fullname" (merge .Subcharts.rabbitmq (dict "nameOverride" "rabbitmq")) }}
-{{- end -}}
-
 {{- define "release.name" -}}
 {{- $name := ( include "common.names.fullname" . ) -}}
 {{- if hasPrefix  "Openshift" .Values.k8sSetup.platform -}}
@@ -298,81 +294,6 @@ Get the report db password
         {{- end -}}
     {{- end -}}
 {{- end -}}
-
-{{/*
-Get the mq URL
-*/}}
-{{- define "release.mqUrl" -}}
-    {{- if .Values.external.mq.enabled -}}
-        {{ .Values.external.mq.url }}
-    {{- else -}}
-        {{- if .Values.rabbitmq.install -}}
-            "amqp://{{ include "rabbitmq.subchart" . }}:{{ .Values.rabbitmq.service.ports.amqp }}"
-        {{- end -}}
-    {{- end -}}
-{{- end -}}
-
-{{/*
-Get the mq queue name
-*/}}
-{{- define "release.mqQueueName" -}}
-    {{- if .Values.external.mq.enabled -}}
-        {{ .Values.external.mq.queueName }}
-    {{- else -}}
-        {{- if .Values.rabbitmq.install -}}
-            "xlr-tasks-queue"
-        {{- end -}}
-    {{- end -}}
-{{- end -}}
-
-{{/*
-Get the mq username
-*/}}
-{{- define "release.mqUsername" -}}
-    {{- if .Values.external.mq.enabled -}}
-        {{ .Values.external.mq.username }}
-    {{- else -}}
-        {{- if .Values.rabbitmq.install -}}
-            {{ .Values.rabbitmq.auth.username }}
-        {{- end -}}
-    {{- end -}}
-{{- end -}}
-
-{{/*
-Get the mq password
-*/}}
-{{- define "release.mqPassword" -}}
-    {{- if .Values.external.mq.enabled -}}
-        {{ .Values.external.mq.password }}
-    {{- else -}}
-        {{- if .Values.rabbitmq.install -}}
-            {{ .Values.rabbitmq.auth.password }}
-        {{- end -}}
-    {{- end -}}
-{{- end -}}
-
-{{/*
-Get the external rabbitmq queue type
-*/}}
-{{- define "release.mqQueueType" -}}
-    {{- if .Values.external.mq.queueType -}}
-        {{ .Values.external.mq.queueType | quote }}
-    {{- else -}}
-        "quorum"
-    {{- end -}}
-{{- end -}}
-
-{{/*
-Get the external queue connector type
-*/}}
-{{- define "release.mqQueueConnector" -}}
-    {{- if .Values.external.mq.connector -}}
-        {{ .Values.external.mq.connector | quote }}
-    {{- else -}}
-        "rabbitmq-jms"
-    {{- end -}}
-{{- end -}}
-
 
 {{/*
 Compile all warnings into a single message, and call fail.

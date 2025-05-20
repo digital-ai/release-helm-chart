@@ -29,8 +29,3 @@ kubectl get secret --namespace  {{ include "common.names.namespace" . }} {{ incl
 ## To get the password for report database, run:
 kubectl get secret --namespace  {{ include "common.names.namespace" . }} {{ include "common.names.fullname" . }} -o jsonpath="{.data.reportDatabasePassword}" | base64 --decode; echo
 {{- end }}
-
-{{- if or .Values.rabbitmq.install .Values.external.mq.enabled }}
-## To get the password for rabbitMQ, run:
-kubectl get secret --namespace  {{ include "common.names.namespace" . }} {{ include "common.names.fullname" . }} -o jsonpath="{.data.rabbitmqPassword}" | base64 --decode; echo
-{{- end }}

@@ -22,8 +22,3 @@ postgresql:
   primary:
     persistence:
       size: 100Mi
-
-rabbitmq:
-  replicaCount: 1
-  persistence:
-    size: 100Mi
