@@ -51,15 +51,3 @@ spec:
         enabled: false
     volumePermissions:
       enabled: false
-  rabbitmq:
-    install: true
-    persistence:
-      size: 1Gi
-      storageClass: ''
-    replicaCount: 1
-    podSecurityContext:
-      enabled: false
-    containerSecurityContext:
-      enabled: false
-    volumePermissions:
-      enabled: false

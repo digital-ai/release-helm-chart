@@ -744,44 +744,10 @@ tasks {
         compression = Compression.GZIP
     }
 
-    // rabbitmq
-    val rabbitmqSubchart = "rabbitmq-15.5.3.tgz"
-    val rabbitmqOperatorChart = operatorChartDir.get().file(rabbitmqSubchart)
-
-    register<Exec>("hotfixRabbitmqOperatorChart") {
-        group = "operator-hotfix"
-        dependsOn(named("buildOperatorApi"))
-        doFirst {
-            copy {
-                from(tarTree(rabbitmqOperatorChart))
-                into(operatorChartDir.get())
-            }
-            delete(rabbitmqOperatorChart)
-        }
-        workingDir(operatorChartDir.get())
-        commandLine("yq", "-i",
-            ".volumePermissions.containerSecurityContext.seLinuxOptions=null", "rabbitmq/values.yaml")
-
-        doLast {
-            logger.lifecycle("Hotfix Rabbitmq operator helm chart")
-        }
-    }
-
-    register<Tar>("hotfixRabbitmqOperatorChartPackage") {
-        group = "operator-hotfix"
-        dependsOn(named("hotfixRabbitmqOperatorChart"))
-        from(operatorChartDir)
-        include("rabbitmq/**")
-        archiveFileName.set(rabbitmqSubchart)
-        destinationDirectory.set(file(operatorChartDir))
-        compression = Compression.GZIP
-    }
-
     register("buildOperatorApiHotfix") {
         group = "operator-hotfix"
         dependsOn(
             named("hotfixPostgresqlOperatorChartPackage"),
-            named("hotfixRabbitmqOperatorChartPackage"),
             named("buildOperatorApi")
         )
         doLast {

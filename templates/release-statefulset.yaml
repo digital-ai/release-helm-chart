@@ -82,7 +82,7 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- include "release.imagePullSecrets" . | nindent 6 }}
-      {{- if or .Values.initContainers (and (not .Values.external.db.enabled) .Values.postgresql.install) (and (not .Values.external.mq.enabled) .Values.rabbitmq.install) }}
+      {{- if or .Values.initContainers (and (not .Values.external.db.enabled) .Values.postgresql.install) }}
       initContainers:
         {{- if not .Values.diagnosticMode.enabled }}
         {{- if and (not .Values.external.db.enabled) .Values.postgresql.install }}
@@ -105,30 +105,6 @@ spec:
               value: {{ include "postgresql.subchart" . }}
             - name: POSTGRESQL_PORT
               value: {{ (include "release.postgresql.service.port" .) | quote }}
-          {{- if .Values.defaultInitContainers.resources }}
-          resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
-          {{- end }}
-        {{- end }}
-        {{- if and (not .Values.external.mq.enabled) .Values.rabbitmq.install }}
-        - name: wait-for-rabbitmq
-          image: {{ include "common.images.image" (dict "imageRoot" .Values.busyBox.image "global" .Values.global "context" .) }}
-          imagePullPolicy: {{ .Values.busyBox.image.pullPolicy | quote }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          command:
-            - /bin/sh
-          args:
-            - -ec
-            - |
-              until nc -z -w 2 -v $RABBITMQ_SVC $RABBITMQ_PORT && echo database ok; do
-                sleep 2;
-              done;
-          env:
-            - name: RABBITMQ_SVC
-              value: {{ include "rabbitmq.subchart" . }}
-            - name: RABBITMQ_PORT
-              value: {{ .Values.rabbitmq.service.ports.amqp | quote }}
           {{- if .Values.defaultInitContainers.resources }}
           resources: {{- toYaml .Values.defaultInitContainers.resources | nindent 12 }}
           {{- end }}
@@ -260,20 +236,6 @@ spec:
               value: {{ .Values.useIpAsHostname | quote }}
             - name: FORCE_REMOVE_MISSING_TYPES
               value: {{ .Values.forceRemoveMissingTypes | quote }}
-             {{- if or .Values.rabbitmq.install .Values.external.mq.enabled }}
-            - name: XLR_TASK_QUEUE_URL
-              value: {{ include "release.mqUrl" . }}
-            - name: XLR_TASK_QUEUE_NAME
-              value: {{ include "release.mqQueueName" . }}
-            - name: XLR_TASK_QUEUE_USERNAME
-              {{- include "render.value-secret" (dict  "value" (include "release.mqUsername" .) "source" .Values.external.mq.username "sourceEnabled" .Values.external.mq.enabled "defaultName" (include "common.names.fullname" .) "defaultKey" "rabbitmqUsername" "context" $ ) | nindent 14 }}
-            - name: XLR_TASK_QUEUE_PASSWORD
-              {{- include "render.value-secret" (dict  "value" (include "release.mqPassword" .) "source" .Values.external.mq.password "sourceEnabled" .Values.external.mq.enabled "defaultName" (include "common.names.fullname" .) "defaultKey" "rabbitmqPassword" "context" $ ) | nindent 14 }}
-            - name: XLR_TASK_QUEUE_TYPE
-              value: {{ include "release.mqQueueType" . }}
-            - name: XLR_TASK_QUEUE_CONNECTOR_TYPE
-              value: {{ include "release.mqQueueConnector" . }}
-             {{- end }}
             {{- if .Values.keystore.keystore }}
             - name: REPOSITORY_KEYSTORE
               {{- include "render.value-secret" (dict  "value" (.Values.keystore.keystore) "defaultName" (include "common.names.fullname" .) "defaultKey" "repositoryKeystore" "context" $ ) | nindent 14 }}
