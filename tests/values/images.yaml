@@ -18,7 +18,3 @@ postgresql:
   install: true
   volumePermissions:
     enabled: true
-rabbitmq:
-  install: true
-  volumePermissions:
-    enabled: true

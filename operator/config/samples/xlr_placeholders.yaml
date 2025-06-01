@@ -112,15 +112,3 @@ spec:
         enabled: false
     volumePermissions:
       enabled: false
-  rabbitmq:
-    install: true
-    persistence:
-      size: '<rabbitmq-storage-size>'
-      storageClass: '<rabbitmq-storage-class-rwo>'
-    replicaCount: <rabbitmq-replica-count>
-    podSecurityContext:
-      enabled: false
-    containerSecurityContext:
-      enabled: false
-    volumePermissions:
-      enabled: false
