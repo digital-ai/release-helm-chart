@@ -9,14 +9,13 @@ Nginx Ingress and Haproxy ingress are disabled and not used with installations o
 ### Subcharts include:
 
 - [PostgresSQL](https://github.com/bitnami/charts/tree/main/bitnami/postgresql)
-- [RabbitMQ](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq)
 - [Nginx Ingress controller](https://github.com/bitnami/charts/tree/main/bitnami/nginx-ingress-controller)
 - [Haproxy Ingress controller](https://github.com/jcmoraisjr/haproxy-ingress/)
 
 ## Installation
 
 The installation can be done using the sample configuration provided below. Please note that this is a minimal configuration and it's not recommended for production use.
-This configuration uses embedded Postgresql and RabbitMQ.
+This configuration uses embedded Postgresql.
 
 ```yaml
 apiVersion: xlr.digital.ai/v1alpha1
@@ -72,18 +71,6 @@ spec:
         enabled: false
     volumePermissions:
       enabled: false
-  rabbitmq:
-    install: true
-    persistence:
-      size: 1Gi
-      storageClass: ''
-    replicaCount: 1
-    podSecurityContext:
-      enabled: false
-    containerSecurityContext:
-      enabled: false
-    volumePermissions:
-      enabled: false
 ```
 
 #### Configuration Details
@@ -98,7 +85,6 @@ The sample configuration uses:
 - Default storage class and minimal size for persistent storage
 - Release pods are using persistence access mode `ReadWriteOnce`, for Release pods the requirement is to have `ReadWriteMany`
 - Embedded PostgreSQL for DB management
-- Embedded RabbitMQ for message queue management
 
 #### Security Configuration Details
 

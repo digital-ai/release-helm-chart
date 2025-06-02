@@ -38,8 +38,3 @@ dependencies:
     version: 16.6.6
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.install
-
-  - name: rabbitmq
-    version: 15.5.3
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: rabbitmq.install
