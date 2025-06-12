@@ -19,7 +19,9 @@ metadata:
 spec:
   serviceName: {{ printf "%s-headless" (include "common.names.fullname" .) }}
   podManagementPolicy: {{ .Values.podManagementPolicy }}
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   {{- if .Values.updateStrategy }}
   updateStrategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
   {{- end }}
