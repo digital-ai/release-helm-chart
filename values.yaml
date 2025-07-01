@@ -828,6 +828,9 @@ dnsPolicy: ""
 ##     value: "4"
 dnsConfig: {}
 
+## @param HOCON format configuration that is concatened to the end of xl-release.conf file
+xlReleaseConfExtra: ""
+
 ## @section Release runtime parameters
 ##
 
@@ -1159,6 +1162,9 @@ configuration:
       }
 
       management.endpoint.prometheus.enabled = {{ .Values.metrics.prometheus.enabled | default false }}
+      
+      {{ .Values.xlReleaseConfExtra }}
+      
       
 ## @param extraConfiguration Configuration file content: extra configuration to be appended to Release configuration
 ## Use this instead of `configuration` to add more configuration
@@ -1816,6 +1822,32 @@ startupProbe:
   periodSeconds: 10
   failureThreshold: 12
   successThreshold: 1
+
+## Add an horizontal pod autoscaler
+## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+## @param autoscaling.enabled Deploy a HorizontalPodAutoscaler object for the Release statefulset. metrics-server needs to be installed or enabled as addon on the cluster if autoscaling is enabled. 
+## @param autoscaling.minReplicas Minimum number of replicas to scale back
+## @param autoscaling.maxReplicas Maximum number of replicas to scale out
+## @param autoscaling.metrics [array] Metrics to use when deciding to scale the deployment (evaluated as a template)
+##
+## For example
+##    - type: Resource
+##      resource:
+##        name: memory
+##        target:
+##          type: Utilization
+##          averageUtilization: 70
+##    - type: Resource
+##      resource:
+##        name: cpu
+##        target:
+##          type: Utilization
+##          averageUtilization: 80
+autoscaling:
+  enabled: false
+  minReplicas: 3
+  maxReplicas: 5
+  metrics: []
 
 ## Default init containers for the Release pod
 defaultInitContainers:
