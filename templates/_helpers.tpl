@@ -218,6 +218,30 @@ Use the service name with namespace. In case of ssl enabled the SNI check will f
 {{- end -}}
 
 {{/*
+Concatenates two paths, ensuring the resulting path has the correct format.
+Handles scenarios where either path may or may not have "/" at the ends.
+
+Usage:
+  {{ include "release.concatPaths" (dict "path1" "path1/subdir/" "path2" "/subpath2") }}
+
+Output:
+  "path1/subdir/subpath2"
+*/}}
+{{- define "release.concatPaths" -}}
+{{- if and .path1 .path2 -}}
+    {{- $path1 := trimSuffix "/" .path1 -}}
+    {{- $path2 := trimPrefix "/" .path2 -}}
+    {{- printf "%s/%s" $path1 $path2 -}}
+{{- else -}}
+    {{- if .path1 -}}
+        {{- .path1 -}}
+    {{- else -}}
+        {{- .path2 -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get the main db URL
 */}}
 {{- define "release.mainDbUrl" -}}
