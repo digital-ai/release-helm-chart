@@ -380,7 +380,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ .Values.appContextRoot }}{{ .Values.livenessProbe.path }}
+              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" .Values.livenessProbe.path) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
@@ -392,7 +392,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ .Values.appContextRoot }}{{ .Values.readinessProbe.path }}
+              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" .Values.readinessProbe.path) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
@@ -404,7 +404,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ .Values.appContextRoot }}{{ .Values.startupProbe.path }}
+              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" .Values.startupProbe.path) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
