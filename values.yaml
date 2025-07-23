@@ -166,7 +166,7 @@ hooks:
     image:
       registry: docker.io
       repository: bitnami/kubectl
-      tag: 1.33.0-debian-12-r0
+      tag: 1.33.3-debian-12-r1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -272,7 +272,7 @@ hooks:
     image:
       registry: docker.io
       repository: bitnami/kubectl
-      tag: 1.33.0-debian-12-r0
+      tag: 1.33.3-debian-12-r1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1911,7 +1911,7 @@ volumePermissions:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 12-debian-12-r43
+    tag: 12-debian-12-r49
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -2070,13 +2070,13 @@ nginx-ingress-controller:
   install: false
   ## @param nginx-ingress-controller.image.tag NGINX Ingress Controller image tag (immutable tags are recommended)
   image:
-    tag: 1.12.1-debian-12-r6
+    tag: 1.13.0-debian-12-r1
   ## Default 404 backend
   ##
   defaultBackend:
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
-      tag: 1.27.5-debian-12-r1
+      tag: 1.29.0-debian-12-r4
   ## @extra nginx-ingress-controller.extraArgs Additional command line arguments to pass to nginx-ingress-controller
   ## E.g. to specify the default SSL certificate you can use
   ## extraArgs:
@@ -2115,7 +2115,7 @@ postgresql:
   install: true
   ## @param postgresql.image.tag PostgreSQL image tag (immutable tags are recommended)
   image:
-    tag: 17.4.0-debian-12-r17
+    tag: 17.5.0-debian-12-r19
   ## @section PostgreSQL Primary parameters
   ##
 
@@ -2228,7 +2228,7 @@ postgresql:
     enabled: true
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
-      tag: 12-debian-12-r43
+      tag: 12-debian-12-r49
 
     ## @param postgresql.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
     ## @param postgresql.volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only    
