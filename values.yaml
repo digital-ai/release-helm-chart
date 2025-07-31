@@ -107,7 +107,7 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnami/kubectl
+      repository: bitnamilegacy/kubectl
       tag: 1.33.3-debian-12-r1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -213,7 +213,7 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnami/kubectl
+      repository: bitnamilegacy/kubectl
       tag: 1.33.3-debian-12-r1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -1619,7 +1619,7 @@ volumePermissions:
   ##
   image:
     registry: docker.io
-    repository: bitnami/os-shell
+    repository: bitnamilegacy/os-shell
     tag: 12-debian-12-r49
     digest: ""
     ## Specify a imagePullPolicy
@@ -1779,12 +1779,14 @@ nginx-ingress-controller:
   install: false
   ## @param nginx-ingress-controller.image.tag NGINX Ingress Controller image tag (immutable tags are recommended)
   image:
+    repository: bitnamilegacy/nginx-ingress-controller
     tag: 1.12.4-debian-12-r0
   ## Default 404 backend
   ##
   defaultBackend:
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
+      repository: bitnamilegacy/nginx
       tag: 1.29.0-debian-12-r4
   ## @extra nginx-ingress-controller.extraArgs Additional command line arguments to pass to nginx-ingress-controller
   ## E.g. to specify the default SSL certificate you can use
@@ -1824,6 +1826,7 @@ postgresql:
   install: true
   ## @param postgresql.image.tag PostgreSQL image tag (immutable tags are recommended)
   image:
+    repository: bitnamilegacy/postgresql
     tag: 16.3.0-debian-12-r23
   ## @section PostgreSQL Primary parameters
   ##
@@ -1937,6 +1940,7 @@ postgresql:
     enabled: true
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
+      repository: bitnamilegacy/os-shell
       tag: 12-debian-12-r49
 
     ## @param postgresql.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
@@ -1967,6 +1971,7 @@ rabbitmq:
   queueType: classic
   ## @param rabbitmq.image.tag RabbitMQ image tag (immutable tags are recommended)
   image:
+    repository: bitnamilegacy/rabbitmq
     tag: 3.13.7-debian-12-r5
   ## Clustering settings
   ##
@@ -2087,6 +2092,7 @@ rabbitmq:
     enabled: true
     ## @param rabbitmq.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
+      repository: bitnamilegacy/os-shell
       tag: 12-debian-12-r49
 
     ## Init container' Security Context
