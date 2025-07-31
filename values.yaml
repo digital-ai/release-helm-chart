@@ -107,7 +107,7 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnami/kubectl
+      repository: bitnamilegacy/kubectl
       tag: 1.33.3-debian-12-r1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -211,7 +211,7 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnami/kubectl
+      repository: bitnamilegacy/kubectl
       tag: 1.33.3-debian-12-r1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -1515,7 +1515,7 @@ volumePermissions:
   ##
   image:
     registry: docker.io
-    repository: bitnami/os-shell
+    repository: bitnamilegacy/os-shell
     tag: 12-debian-12-r49
     digest: ""
     ## Specify a imagePullPolicy
@@ -1646,12 +1646,14 @@ nginx-ingress-controller:
   install: false
   ## @param nginx-ingress-controller.image.tag NGINX Ingress Controller image tag (immutable tags are recommended)
   image:
+    repository: bitnamilegacy/nginx-ingress-controller
     tag: 1.12.4-debian-12-r0
   ## Default 404 backend
   ##
   defaultBackend:
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
+      repository: bitnamilegacy/nginx
       tag: 1.26.2-debian-12-r10
   ## @extra nginx-ingress-controller.extraArgs Additional command line arguments to pass to nginx-ingress-controller
   ## E.g. to specify the default SSL certificate you can use
@@ -1691,6 +1693,7 @@ postgresql:
   install: true
   ## @param postgresql.image.tag PostgreSQL image tag (immutable tags are recommended)
   image:
+    repository: bitnamilegacy/postgresql
     tag: 15.6.0-debian-12-r20
   ## @section PostgreSQL Primary parameters
   ##
@@ -1808,6 +1811,7 @@ postgresql:
     enabled: true
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
+      repository: bitnamilegacy/os-shell
       tag: 12-debian-12-r49
 
 ## @section RabbitMQ
@@ -1820,6 +1824,7 @@ rabbitmq:
   install: true
   ## @param rabbitmq.image.tag RabbitMQ image tag (immutable tags are recommended)
   image:
+    repository: bitnamilegacy/rabbitmq
     tag: 3.12.14-debian-12-r7
   ## Clustering settings
   ##
@@ -1936,6 +1941,7 @@ rabbitmq:
     enabled: true
     ## @param rabbitmq.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
+      repository: bitnamilegacy/os-shell
       tag: 12-debian-12-r49
 
     ## Init container' Security Context
