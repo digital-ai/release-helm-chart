@@ -23,6 +23,9 @@ kind: DigitalaiRelease
 metadata:
   name: dair-min
 spec:
+  global:
+    security:
+      allowInsecureImages: true
   k8sSetup:
     platform: Openshift
   auth:

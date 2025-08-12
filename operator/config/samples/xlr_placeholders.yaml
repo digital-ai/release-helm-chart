@@ -3,6 +3,9 @@ kind: DigitalaiRelease
 metadata:
   name: dair-placeholders
 spec:
+  global:
+    security:
+      allowInsecureImages: true
   k8sSetup:
     platform: Openshift
   auth:
