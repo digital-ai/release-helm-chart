@@ -22,6 +22,8 @@ global:
     service:
       ports:
         postgresql: ""
+  security:
+    allowInsecureImages: true
 
 ## @section K8S env parameters
 ##
@@ -165,8 +167,8 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnamilegacy/kubectl
-      tag: 1.33.3-debian-12-r1
+      repository: xebialabsunsupported/xl-client
+      tag: "{{ .Chart.AppVersion }}"
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -216,7 +218,7 @@ hooks:
         path: "bin/get-license.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           echo "Requesting unregistered license"
           SERVER_PATH_PART=https://download.xebialabs.com
@@ -235,7 +237,7 @@ hooks:
         path: "bin/install-license.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           SECRET_NAME="{{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.getLicense.name "context" $ ) }}"
           FILE_PATH="/opt/xebialabs/xl-release-server/conf/xl-release-license.lic"
@@ -271,8 +273,8 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnamilegacy/kubectl
-      tag: 1.33.3-debian-12-r1
+      repository: xebialabsunsupported/xl-client
+      tag: "{{ .Chart.AppVersion }}"
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -322,7 +324,7 @@ hooks:
         path: "bin/gen-self-signed.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           echo "Generating release self-signed cert"
           HOSTNAME="{{- include "release.hostname" . -}}"
@@ -342,7 +344,7 @@ hooks:
         path: "bin/install-self-signed.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           SECRET_NAME="{{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.genSelfSigned.name "context" $ ) }}"
           KEYSTORE_FILE_PATH="/opt/xebialabs/xl-release-server/conf/keystore.{{- .Values.ssl.keystoreType -}}"
@@ -372,6 +374,8 @@ hooks:
     answersSecret: ""
     ## @param hooks.installReleaseRunner.installCommand The command for Release Runner installation
     installCommand: |
+      #!/bin/sh
+
       cd /tmp; 
       /opt/xebialabs/xl-client/xl kube upgrade \
         --skip-context-check \
@@ -1910,8 +1914,8 @@ volumePermissions:
   ##
   image:
     registry: docker.io
-    repository: bitnamilegacy/os-shell
-    tag: 12-debian-12-r49
+    repository: xebialabsunsupported/xl-release
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -1999,8 +2003,8 @@ pdb:
 busyBox:
   image:
     registry: docker.io
-    repository: library/busybox
-    tag: stable
+    repository: xebialabsunsupported/xl-client
+    tag: "{{ .Chart.AppVersion }}"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images

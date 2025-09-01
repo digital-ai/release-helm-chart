@@ -1,5 +1,5 @@
 image:
-    repository: xebialabsunsupported/xl-release
-    tag: 25.3-ubuntu
-#    pullPolicy: IfNotPresent
-    pullPolicy: Always
+  repository: xebialabsunsupported/xl-release
+  tag: 25.3.0-beta.814
+  #    pullPolicy: IfNotPresent
+  pullPolicy: Always
