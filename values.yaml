@@ -2075,14 +2075,14 @@ nginx-ingress-controller:
   ## @param nginx-ingress-controller.image.tag NGINX Ingress Controller image tag (immutable tags are recommended)
   image:
     repository: bitnamilegacy/nginx-ingress-controller
-    tag: 1.13.0-debian-12-r1
+    tag: 1.13.1-debian-12-r1
   ## Default 404 backend
   ##
   defaultBackend:
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/nginx
-      tag: 1.29.0-debian-12-r4
+      tag: 1.29.1-debian-12-r0
   ## @extra nginx-ingress-controller.extraArgs Additional command line arguments to pass to nginx-ingress-controller
   ## E.g. to specify the default SSL certificate you can use
   ## extraArgs:
@@ -2236,7 +2236,7 @@ postgresql:
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/os-shell
-      tag: 12-debian-12-r49
+      tag: 12-debian-12-r51
 
     ## @param postgresql.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
     ## @param postgresql.volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only    
