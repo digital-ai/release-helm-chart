@@ -22,6 +22,8 @@ global:
     service:
       ports:
         postgresql: ""
+  security:
+    allowInsecureImages: true
 
 ## @section K8S env parameters
 ##
@@ -107,8 +109,8 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnamilegacy/kubectl
-      tag: 1.33.3-debian-12-r1
+      repository: xebialabsunsupported/xl-client
+      tag: "{{ .Chart.AppVersion }}"
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -158,7 +160,7 @@ hooks:
         path: "bin/get-license.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           echo "Requesting unregistered license"
           SERVER_PATH_PART=https://download.xebialabs.com
@@ -177,7 +179,7 @@ hooks:
         path: "bin/install-license.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           SECRET_NAME="{{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.getLicense.name "context" $ ) }}"
           FILE_PATH="/opt/xebialabs/xl-release-server/conf/xl-release-license.lic"
@@ -213,8 +215,8 @@ hooks:
     ##
     image:
       registry: docker.io
-      repository: bitnamilegacy/kubectl
-      tag: 1.33.3-debian-12-r1
+      repository: xebialabsunsupported/xl-client
+      tag: "{{ .Chart.AppVersion }}"
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -264,7 +266,7 @@ hooks:
         path: "bin/gen-self-signed.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           echo "Generating release self-signed cert"
           HOSTNAME="{{- include "release.hostname" . -}}"
@@ -284,7 +286,7 @@ hooks:
         path: "bin/install-self-signed.sh"
         mode: 0755
         content: |
-          #!/bin/bash
+          #!/bin/sh
 
           SECRET_NAME="{{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.genSelfSigned.name "context" $ ) }}"
           KEYSTORE_FILE_PATH="/opt/xebialabs/xl-release-server/conf/keystore.{{- .Values.ssl.keystoreType -}}"
@@ -314,6 +316,8 @@ hooks:
     answersSecret: ""
     ## @param hooks.installReleaseRunner.installCommand The command for Release Runner installation
     installCommand: |
+      #!/bin/sh
+
       cd /tmp; 
       /opt/xebialabs/xl-client/xl kube upgrade \
         --skip-context-check \
@@ -671,6 +675,9 @@ dnsPolicy: ""
 ##     value: "4"
 dnsConfig: {}
 
+## @param HOCON format configuration that is concatened to the end of xl-release.conf file
+xlReleaseConfExtra: ""
+
 ## @section Release runtime parameters
 ##
 
@@ -945,6 +952,9 @@ configuration:
         }
         {{- end }}
       }
+      
+      {{ .Values.xlReleaseConfExtra }}
+
 
 ## @param extraConfiguration Configuration file content: extra configuration to be appended to Release configuration
 ## Use this instead of `configuration` to add more configuration
@@ -1619,8 +1629,8 @@ volumePermissions:
   ##
   image:
     registry: docker.io
-    repository: bitnamilegacy/os-shell
-    tag: 12-debian-12-r49
+    repository: xebialabsunsupported/xl-release
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -1708,8 +1718,8 @@ pdb:
 busyBox:
   image:
     registry: docker.io
-    repository: library/busybox
-    tag: stable
+    repository: xebialabsunsupported/xl-client
+    tag: "{{ .Chart.AppVersion }}"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1787,7 +1797,7 @@ nginx-ingress-controller:
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/nginx
-      tag: 1.29.0-debian-12-r4
+      tag: 1.29.1-debian-12-r0
   ## @extra nginx-ingress-controller.extraArgs Additional command line arguments to pass to nginx-ingress-controller
   ## E.g. to specify the default SSL certificate you can use
   ## extraArgs:
@@ -1941,7 +1951,7 @@ postgresql:
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/os-shell
-      tag: 12-debian-12-r49
+      tag: 12-debian-12-r51
 
     ## @param postgresql.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
     ## @param postgresql.volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only    
@@ -2093,7 +2103,7 @@ rabbitmq:
     ## @param rabbitmq.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/os-shell
-      tag: 12-debian-12-r49
+      tag: 12-debian-12-r51
 
     ## Init container' Security Context
     ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
