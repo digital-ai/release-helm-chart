@@ -344,7 +344,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" .Values.livenessProbe.path) }}
+              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" (include "common.tplvalues.render" ( dict "value" .Values.livenessProbe.path "context" $)) ) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
@@ -356,7 +356,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" .Values.readinessProbe.path) }}
+              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" (include "common.tplvalues.render" ( dict "value" .Values.readinessProbe.path "context" $)) ) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
@@ -368,7 +368,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" .Values.startupProbe.path) }}
+              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" (include "common.tplvalues.render" ( dict "value" .Values.startupProbe.path "context" $)) ) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
