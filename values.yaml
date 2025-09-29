@@ -812,6 +812,15 @@ debugMode:
   ## @param debugMode.remoteJvmParams Agent lib configuration line with port. Do port forwarding to the port you would like to use.
   ##
   remoteJvmParams: "{{- if .Values.debugMode.enabled }} -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:8001{{- end }}"
+## Enable maintenance mode, which is a special mode of operating a single Digital.ai Release instance or an entire cluster. The primary use is to boot-up Release in maintenance mode for post-upgrade smoke testing and clean-up activities.
+##
+maintenanceMode:
+  ## @param maintenanceMode.enabled Enable maintenance mode
+  ##
+  enabled: false
+  ## @param maintenanceMode.restrictApiAccess If set to false, only administrators can access the REST API endpoints. If set to true, no one can access the REST API. All REST API invocations will result with HTTP 503 Service unavailable.
+  ##
+  restrictApiAccess: false
 
 ## @section Release DNS parameters
 ##
@@ -1165,6 +1174,10 @@ configuration:
           {{- end }}
         }
         {{- end }}
+        maintenance {
+          enabled = {{ .Values.maintenanceMode.enabled }}
+          restrictApiAccess = {{ .Values.maintenanceMode.restrictApiAccess }}
+        }
       }
 
       management.endpoint.prometheus.enabled = {{ .Values.metrics.prometheus.enabled | default false }}
@@ -1785,7 +1798,7 @@ resources: {}
 ##
 livenessProbe:
   enabled: true
-  path: s/actuator/health/liveness
+  path: "{{- if $.Values.maintenanceMode.enabled -}}/{{- else -}}s/actuator/health/liveness{{- end -}}"
   initialDelaySeconds: 10
   timeoutSeconds: 20
   periodSeconds: 10
@@ -1804,7 +1817,7 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: true
-  path: s/actuator/health/readiness
+  path: "{{- if $.Values.maintenanceMode.enabled -}}/{{- else -}}s/actuator/health/readiness{{- end -}}"
   initialDelaySeconds: 10
   timeoutSeconds: 20
   periodSeconds: 10
@@ -1823,7 +1836,7 @@ readinessProbe:
 ##
 startupProbe:
   enabled: true
-  path: s/actuator/health/readiness
+  path: "{{- if $.Values.maintenanceMode.enabled -}}/{{- else -}}s/actuator/health/readiness{{- end -}}"
   initialDelaySeconds: 60
   timeoutSeconds: 20
   periodSeconds: 10
