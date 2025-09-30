@@ -23,6 +23,8 @@ global:
       ports:
         postgresql: ""
   security:
+    ## @param global.security.allowInsecureImages Use true in case you need to use bitnami unsecure images, we use bitnamilegacy images for Bitnami helm charts, so yes is by default
+    ##
     allowInsecureImages: true
 
 ## @section K8S env parameters
@@ -841,7 +843,7 @@ dnsPolicy: ""
 ##     value: "4"
 dnsConfig: {}
 
-## @param HOCON format configuration that is concatened to the end of xl-release.conf file
+## @param xlReleaseConfExtra HOCON format configuration that is concatenated to the end of xl-release.conf file
 xlReleaseConfExtra: ""
 
 ## @section Release runtime parameters
@@ -2085,6 +2087,7 @@ haproxy-ingress:
 nginx-ingress-controller:
   ## @param nginx-ingress-controller.install Enable NGINX Ingress Controller helm subchart installation
   install: false
+  ## @param nginx-ingress-controller.image.repository NGINX Ingress Controller image repository
   ## @param nginx-ingress-controller.image.tag NGINX Ingress Controller image tag (immutable tags are recommended)
   image:
     repository: bitnamilegacy/nginx-ingress-controller
@@ -2092,6 +2095,7 @@ nginx-ingress-controller:
   ## Default 404 backend
   ##
   defaultBackend:
+    ## @param nginx-ingress-controller.defaultBackend.image.repository Default backend image repository
     ## @param nginx-ingress-controller.defaultBackend.image.tag Default backend image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/nginx
@@ -2132,6 +2136,8 @@ nginx-ingress-controller:
 postgresql:
   ## @param postgresql.install Enable PostgreSQL helm subchart installation
   install: true
+
+  ## @param postgresql.image.repository PostgreSQL image container repository for volume-permissions
   ## @param postgresql.image.tag PostgreSQL image tag (immutable tags are recommended)
   image:
     repository: bitnamilegacy/postgresql
@@ -2246,6 +2252,7 @@ postgresql:
     ## @param postgresql.volumePermissions.enabled Enable init container that changes the owner and group of the persistent volume
     ##
     enabled: true
+    ## @param postgresql.volumePermissions.image.repository Init container repository for volume-permissions
     ## @param postgresql.volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
     image:
       repository: bitnamilegacy/os-shell
