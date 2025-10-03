@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z "$DOCKER_HUB_REPOSITORY" ]; then
+  echo "The '\$DOCKER_HUB_REPOSITORY environment variable is not set."
+  exit 1
+fi
+
 if [ -z "$RELEASE_EXPLICIT" ]; then
   echo "The '\$RELEASE_EXPLICIT environment variable is not set."
   exit 1
@@ -16,8 +21,8 @@ if [ -f "index.Dockerfile" ]; then
 fi
 
 opm index add \
-  --bundles docker.io/$RELEASE_REGISTRY/release-operator-bundle:$RELEASE_EXPLICIT \
-  --tag docker.io/$RELEASE_REGISTRY/release-operator-index:26.1 \
+  --bundles docker.io/$DOCKER_HUB_REPOSITORY/release-operator-bundle:$RELEASE_EXPLICIT \
+  --tag docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.1 \
   --generate
-docker build -f index.Dockerfile -t docker.io/$RELEASE_REGISTRY/release-operator-index:26.1 .
-docker push docker.io/$RELEASE_REGISTRY/release-operator-index:26.1
+docker build -f index.Dockerfile -t docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.1 .
+docker push docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.1
