@@ -10,6 +10,21 @@ if [ -z "$RELEASE_EXPLICIT" ]; then
   exit 1
 fi
 
+if [ -z "$REDHAT_OC_URL" ]; then
+  echo "The '\$REDHAT_OC_URL environment variable is not set."
+  exit 1
+fi
+
+if [ -z "$REDHAT_OC_LOGIN" ]; then
+  echo "The '\$REDHAT_OC_LOGIN environment variable is not set."
+  exit 1
+fi
+
+if [ -z "$REDHAT_OC_PASSWORD" ]; then
+  echo "The '\$REDHAT_OC_PASSWORD environment variable is not set."
+  exit 1
+fi
+
 # Check if the database directory exists and delete it if it does
 if [ -d "database" ]; then
   rm -rf "database"
@@ -26,3 +41,7 @@ opm index add \
   --generate
 docker build -f index.Dockerfile -t docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.1 .
 docker push docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.1
+
+oc login $REDHAT_OC_URL --username=$REDHAT_OC_LOGIN --password=$REDHAT_OC_PASSWORD
+oc delete -f operator/test/test-operator-catalogsource.yaml
+oc create -f operator/test/test-operator-catalogsource.yaml
