@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter
 import org.apache.commons.lang.SystemUtils.*
 import java.time.Instant
 import de.undercouch.gradle.tasks.download.Download
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 buildscript {
     repositories {
@@ -30,7 +31,7 @@ buildscript {
 plugins {
     kotlin("jvm") version "2.1.20"
 
-    id("com.github.node-gradle.node") version "7.0.2"
+    id("com.github.node-gradle.node") version "7.1.0"
     id("idea")
     id("nebula.release") version (properties["nebulaReleasePluginVersion"] as String)
     id("maven-publish")
@@ -51,7 +52,7 @@ val kustomizeVersion = properties["kustomizeVersion"]
 val operatorBundleChannels = properties["operatorBundleChannels"]
 val operatorBundleDefaultChannel = properties["operatorBundleDefaultChannel"]
 val nodeVersion = properties["nodeVersion"] as String
-val yarnVersion = properties["yarnVersion"]
+val yarnVersion = properties["yarnVersion"] as String
 
 val os = detectOs()
 val arch = detectHostArch()
@@ -128,6 +129,10 @@ java {
     withJavadocJar()
 }
 
+interface InjectedExecOps {
+    @get:Inject val execOps: ExecOperations
+}
+
 tasks.named<Test>("test") {
     useJUnitPlatform()
 }
@@ -139,11 +144,15 @@ tasks.withType<AbstractPublishToMaven> {
 tasks {
 
     compileKotlin {
-        kotlinOptions.jvmTarget = languageLevel
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(languageLevel))
+        }
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = languageLevel
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(languageLevel))
+        }
     }
 
     val operatorImageUrl = "docker.io/$dockerHubRepository/release-operator:$releasedVersion"
@@ -167,13 +176,16 @@ tasks {
         group = "helm"
         src("https://get.helm.sh/helm-v$helmVersion-$os-$arch.tar.gz")
         dest(helmDir.file("helm.tar.gz").getAsFile())
+        val injected = objects.newInstance<InjectedExecOps>()
         doLast {
             copy {
                 from(tarTree(helmDir.file("helm.tar.gz")))
                 into(helmDir)
-                fileMode = 0b111101101
+                filePermissions {
+                    unix("rwxr-xr-x")
+                }
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(helmDir)
                 commandLine(helmCli, "version")
             }
@@ -184,13 +196,16 @@ tasks {
         group = "operatorSdk"
         src("https://github.com/operator-framework/operator-sdk/releases/download/v$operatorSdkVersion/operator-sdk_${os}_$arch")
         dest(operatorSdkDir.dir("operator-sdk-tool").file("operator-sdk").getAsFile())
+        val injected = objects.newInstance<InjectedExecOps>()
         doLast {
             copy {
                 from(operatorSdkDir.dir("operator-sdk-tool").file("operator-sdk"))
                 into(operatorSdkDir)
-                fileMode = 0b111101101
+                filePermissions {
+                    unix("rwxr-xr-x")
+                }
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(operatorSdkDir)
                 commandLine(operatorSdkCli, "version")
             }
@@ -202,13 +217,16 @@ tasks {
         // dependsOn("installOperatorSdk")
         src("https://github.com/redhat-openshift-ecosystem/openshift-preflight/releases/download/$openshiftPreflightVersion/preflight-${os}-$arch")
         dest(openshiftPreflightDir.dir("install").file("openshift-preflight").getAsFile())
+        val injected = objects.newInstance<InjectedExecOps>()
         doLast {
             copy {
                 from(openshiftPreflightDir.dir("install").file("openshift-preflight"))
                 into(openshiftPreflightDir)
-                fileMode = 0b111101101
+                filePermissions {
+                    unix("rwxr-xr-x")
+                }
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(openshiftPreflightDir)
                 commandLine(openshiftPreflightCli, "--version")
             }
@@ -219,13 +237,16 @@ tasks {
         group = "kustomize"
         src("https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$kustomizeVersion/kustomize_v${kustomizeVersion}_${os}_$arch.tar.gz")
         dest(kustomizeDir.file("kustomize.tar.gz").getAsFile())
+        val injected = objects.newInstance<InjectedExecOps>()
         doLast {
             copy {
                 from(tarTree(kustomizeDir.file("kustomize.tar.gz")))
                 into(kustomizeDir)
-                fileMode = 0b111101101
+                filePermissions {
+                    unix("rwxr-xr-x")
+                }
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(kustomizeDir)
                 commandLine(kustomizeCli, "version")
             }
@@ -268,13 +289,12 @@ tasks {
         workingDir(buildXlrOperatorDir)
         commandLine(helmCli, "dependency", "update", ".")
 
+        val injected = objects.newInstance<InjectedExecOps>()
         doLast {
-            exec {
-                workingDir(buildXlrOperatorDir)
-                commandLine("ls", "charts")
+            injected.execOps.exec {
+            workingDir(buildXlrOperatorDir)
+            commandLine("ls", "charts")
             }
-        }
-        doLast {
             logger.lifecycle("Prepare helm deps finished")
         }
     }
@@ -299,7 +319,7 @@ tasks {
         commandLine(helmCli, "plugin", "list")
 
         doLast {
-            val unitTestPluginExists = if (standardOutput != null) standardOutput.toString() else ""
+            val unitTestPluginExists = standardOutput.toString()
             if(!unitTestPluginExists.contains("unittest")) {
                 commandLine(helmCli, "plugin", "install", "https://github.com/helm-unittest/helm-unittest")
                 logger.lifecycle("Install helm unit test plugin finished")
@@ -358,10 +378,11 @@ tasks {
         commandLine(operatorSdkCli, "init", "--domain=digital.ai", "--plugins=helm")
 
         val targetFile = buildXlrDir.get().file("config/manager/manager.yaml")
+        val injected = objects.newInstance<InjectedExecOps>()
 
         doLast {
             // config/manager/manager.yaml replace resource memory
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#memory: 128Mi#memory: 512Mi#g",
@@ -411,7 +432,9 @@ tasks {
             copy {
                 from(tarTree(helmDir.file("helm.tar.gz")))
                 into(buildXlrDir)
-                fileMode = 0b111101101
+                filePermissions {
+                    unix("rwxr-xr-x")
+                }
             }
         }
     }
@@ -429,23 +452,25 @@ tasks {
         val sourceWatchesFile = operatorFolder.resolve("watches.yaml")
         val targetWatchesFile = buildXlrDir.get().dir("watches.yaml")
 
+        val injected = objects.newInstance<InjectedExecOps>()
+
         doFirst {
             // operator/Dockerfile -> Dockerfile
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "/^FROM.*/r $sourceDockerFile",
                     targetDockerFile)
             }
             // operator/Dockerfile replace VERSION
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${VERSION}#$releasedVersion#g",
                     targetDockerFile)
             }
             // operator/watches.yaml -> watches.yaml
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "/^#.+kubebuilder:scaffold:watch.*/r $sourceWatchesFile",
@@ -494,6 +519,8 @@ tasks {
         val targetAnnotationsFile = buildXlrDir.get().dir("bundle").dir("metadata").dir("annotations.yaml")
         val targetCsvFile = buildXlrDir.get().dir("config/manifests/bases/xlr.clusterserviceversion.yaml")
 
+        val injected = objects.newInstance<InjectedExecOps>()
+
         doFirst {
             // config/**/*.yaml -> config
             copy {
@@ -502,93 +529,93 @@ tasks {
                 into(buildXlrDir)
                 duplicatesStrategy = DuplicatesStrategy.WARN
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir.get().dir("config/samples"))
                 commandLine(kustomizeCli, "edit", "add", "resource", "xlr_minimal.yaml")
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir.get().dir("config/samples"))
                 commandLine(kustomizeCli, "edit", "add", "resource", "xlr_placeholders.yaml")
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir.get().dir("config/default"))
                 commandLine(kustomizeCli, "edit", "remove", "resource", "../manager")
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir.get().dir("config/default"))
                 commandLine(kustomizeCli, "edit", "add", "resource", "../custom")
             }
             // config/manifests/bases/xlr.clusterserviceversion.yaml replace VERSION
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${VERSION}#$releasedVersion#g",
                     targetCsvFile)
             }
             // config/manifests/bases/xlr.clusterserviceversion.yaml replace APP_VERSION
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${APP_VERSION}#$releasedAppVersion#g",
                     targetCsvFile)
             }
             // config/custom/manager_config_patch.yaml replace APP_VERSION
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${APP_VERSION}#$releasedAppVersion#g",
                     buildXlrDir.get().dir("config/custom/manager_config_patch.yaml"))
             }
             // config/manifests/bases/xlr.clusterserviceversion.yaml replace DOCKER_HUB_REPOSITORY
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${DOCKER_HUB_REPOSITORY}#$dockerHubRepository#g",
                     targetCsvFile)
             }
             // config/custom/manager_config_patch.yaml replace DOCKER_HUB_REPOSITORY
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${DOCKER_HUB_REPOSITORY}#$dockerHubRepository#g",
                     buildXlrDir.get().dir("config/custom/manager_config_patch.yaml"))
             }
             // config/manifests/bases/xlr.clusterserviceversion.yaml replace CONTAINER_IMAGE
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${CONTAINER_IMAGE}#$operatorImageUrl#g",
                     targetCsvFile)
             }
             // config/manifests/bases/xlr.clusterserviceversion.yaml replace CURRENT_TIME
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "s#\${CURRENT_TIME}#$currentTime#g",
                     targetCsvFile)
             }
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("$operatorFolder/scripts/generate_skip_versions.sh", releasedVersion, targetCsvFile)
             }
         }
         doLast {
             // bundle.Dockerfile -> bundle.Dockerfile
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "/^LABEL operators.operatorframework.io.test.config.*/r $sourceDockerFile",
                     targetDockerFile)
             }
             // annotations.yaml -> bundle/annotations.yaml
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "/^.*operators.operatorframework.io.test.config.v1.*/r $sourceAnnotationsFile",
                     targetAnnotationsFile)
             }
             // bundle/annotations.yaml remove empty lines
-            exec {
+            injected.execOps.exec {
                 workingDir(buildXlrDir)
                 commandLine("sed", "-i.bak",
                     "-e", "/^\$/d",
@@ -652,8 +679,8 @@ tasks {
     register("dumpVersion") {
         group = "release"
         doLast {
-            file(buildDir).mkdirs()
-            file("$buildDir/version.dump").writeText("version=${releasedVersion}")
+            layout.buildDirectory.get().asFile.mkdirs()
+            layout.buildDirectory.file("version.dump").get().asFile.writeText("version=${releasedVersion}")
         }
     }
 
@@ -758,7 +785,7 @@ tasks.named("build") {
 publishing {
     publications {
         register("digitalai-release-helm", MavenPublication::class) {
-            artifact("${buildDir}/xlr/xlr.tgz") {
+            artifact("${layout.buildDirectory.get().asFile}/xlr/xlr.tgz") {
                 artifactId = "release-helm"
                 version = releasedVersion
             }

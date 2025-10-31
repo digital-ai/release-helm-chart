@@ -15,7 +15,7 @@ pipeline {
     environment {
         REPOSITORY_NAME = 'release-helm-chart'
         RELEASE_EXPLICIT = "${getCurrentVersion()}-${getBranch()}"
-        LINUX_JDK_NAME = 'OpenJDK 17.0.2'
+        LINUX_JDK_NAME = 'OpenJDK 21.0.6'
     }
 
     parameters {
