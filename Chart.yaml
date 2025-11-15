@@ -25,7 +25,7 @@ dependencies:
     version: 2.x.x
 
   - name: haproxy-ingress
-    version: 0.14.9
+    version: 0.14.10
     repository: "https://haproxy-ingress.github.io/charts"
     condition: haproxy-ingress.install
 
