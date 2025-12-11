@@ -1,7 +1,7 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: release-test-operators-25-1
+  name: release-test-operators-25-3
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
