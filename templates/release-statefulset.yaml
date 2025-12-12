@@ -323,7 +323,7 @@ spec:
               value: {{ .Values.ssl.keystoreType }}
             {{- end }}
             - name: APP_CONTEXT_ROOT
-              value: {{ .Values.appContextRoot }}
+              value: {{ include "release.contextRoot" .Values.appContextRoot }}
             - name: XL_RELEASE_SERVER_OPTS
               value: "{{- include "common.tplvalues.render" (dict "value" .Values.jvmArgs "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.truststore.params "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.debugMode.remoteJvmParams "context" $) }}"
             - name: NETWORK_ADDRESS_CACHE_TTL
@@ -360,7 +360,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ .Values.appContextRoot }}
+              path: {{ include "release.contextRoot" .Values.appContextRoot }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
             initialDelaySeconds: {{ .Values.health.probesLivenessTimeout }}
@@ -373,7 +373,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ .Values.appContextRoot }}
+              path: {{ include "release.contextRoot" .Values.appContextRoot }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
             initialDelaySeconds: {{ .Values.health.probesReadinessTimeout }}
