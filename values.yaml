@@ -434,6 +434,18 @@ hooks:
       seccompProfile:
         type: RuntimeDefault
 
+## @section Release account lockout parameters
+
+accountLockout:
+  ## @param accountLockout.enabled Enable account lockout feature
+  enabled: false
+  ## @param accountLockout.maxFailedAttempts Maximum number of failed login attempts before locking the account
+  maxFailedAttempts: 5
+  ## @param accountLockout.lockoutDuration Duration (in minutes) for which the account remains locked
+  lockoutDuration: 15
+  ## @param accountLockout.whitelistUsernames List of usernames that are exempt from account lockout
+  whitelistUsernames: ["admin"]
+
 ## @section Release security parameters
 
 ## Release Authentication parameters
@@ -1076,9 +1088,18 @@ configuration:
         metrics {
           enabled = ${XL_METRICS_ENABLED}
         }
-      
-        {{- if .Values.oidc.enabled }}
+
+        {{- if or .Values.accountLockout.enabled .Values.oidc.enabled }}
         security {
+          {{- if .Values.accountLockout.enabled }}
+          account-lockout {
+            enabled = true
+            max-login-failed-attempts = {{ .Values.accountLockout.maxFailedAttempts }}
+            lockout-duration = {{ .Values.accountLockout.lockoutDuration }} minutes
+            whitelist-username = {{ .Values.accountLockout.whitelistUsernames | toJson }}
+          }
+          {{- end }}
+          {{- if .Values.oidc.enabled }}
           auth {
             providers {
               oidc {
@@ -1151,6 +1172,7 @@ configuration:
               }
             }
           }
+          {{- end }}
         }
         {{- end }}
         {{- if or .Values.storage.jobLog.s3.enabled .Values.storage.jobLog.cleanupInterval .Values.storage.jobLog.maxItemsPerCleanup }}
