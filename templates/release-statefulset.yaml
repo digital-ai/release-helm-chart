@@ -291,7 +291,7 @@ spec:
               value: {{ .Values.ssl.keystoreType }}
             {{- end }}
             - name: APP_CONTEXT_ROOT
-              value: {{ .Values.appContextRoot }}
+              value: {{ include "release.contextRoot" .Values.appContextRoot }}
             - name: XL_RELEASE_SERVER_OPTS
               value: "{{- include "common.tplvalues.render" (dict "value" .Values.jvmArgs "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.truststore.params "context" $) }}{{ include "common.tplvalues.render" (dict "value" .Values.debugMode.remoteJvmParams "context" $) }}"
             - name: NETWORK_ADDRESS_CACHE_TTL
@@ -344,7 +344,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" (include "common.tplvalues.render" ( dict "value" .Values.livenessProbe.path "context" $)) ) }}
+              path: {{ include "release.concatPaths" (dict "path1" (include "release.contextRoot" .Values.appContextRoot) "path2" (include "common.tplvalues.render" ( dict "value" .Values.livenessProbe.path "context" $)) ) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
@@ -356,7 +356,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" (include "common.tplvalues.render" ( dict "value" .Values.readinessProbe.path "context" $)) ) }}
+              path: {{ include "release.concatPaths" (dict "path1" (include "release.contextRoot" .Values.appContextRoot) "path2" (include "common.tplvalues.render" ( dict "value" .Values.readinessProbe.path "context" $)) ) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
@@ -368,7 +368,7 @@ spec:
             {{- else }}
             httpGet:
               scheme: HTTP
-              path: {{ include "release.concatPaths" (dict "path1" .Values.appContextRoot "path2" (include "common.tplvalues.render" ( dict "value" .Values.startupProbe.path "context" $)) ) }}
+              path: {{ include "release.concatPaths" (dict "path1" (include "release.contextRoot" .Values.appContextRoot) "path2" (include "common.tplvalues.render" ( dict "value" .Values.startupProbe.path "context" $)) ) }}
               port: {{ .Values.service.portNames.releaseHttp }}
             {{- end }}
           {{- end }}
