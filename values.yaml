@@ -134,6 +134,13 @@ appHostname: ""
 ## @param appContextRoot Release context root.
 ##
 appContextRoot: /
+
+## @param ai.enabled Enable Ask Release features in Release
+## @param ai.assistantUrl The URL of the Ask Release service that Release will connect to for AI features. This should be set if ai.enabled is true.
+ai:
+  enabled: false
+  assistantUrl: ""
+
 ## @param logback.globalLoggingLevel Global logging level. Possible values: "trace", "debug", "info", "warn", "error"
 ## @param logback.scanEnabled Enables scanning of logback.xml.
 ## @param logback.scanPeriod Interval for checking logback.xml configuration.
@@ -1200,7 +1207,14 @@ configuration:
           enabled = {{ .Values.maintenanceMode.enabled }}
           restrictApiAccess = {{ .Values.maintenanceMode.restrictApiAccess }}
         }
-      }
+      
+        features {
+          ai {
+            enabled = {{ .Values.ai.enabled }}
+            assistant-url = {{ .Values.ai.assistantUrl | quote }}
+          }
+        }
+      }      
 
       management.endpoint.prometheus.enabled = {{ .Values.metrics.prometheus.enabled | default false }}
       
@@ -2295,3 +2309,7 @@ postgresql:
       runAsNonRoot: false
       seccompProfile:
         type: RuntimeDefault
+
+## @param release-assistant-helm-chart.install
+release-assistant-helm-chart:
+  install: false

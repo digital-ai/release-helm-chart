@@ -38,3 +38,8 @@ dependencies:
     version: 16.7.27
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgresql.install
+
+  - name: release-assistant-helm-chart
+    version: 0.1.0
+    repository: "oci://docker.io/xebialabsunsupported"
+    condition: release-assistant-helm-chart.install
