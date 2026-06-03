@@ -1,8 +1,8 @@
 apiVersion: v2
-appVersion: 26.1.0
+appVersion: 26.3.0
 description: A Helm chart for Digital.ai Release
 name: digitalai-release
-version: 26.1.0
+version: 26.3.0
 kubeVersion: ">= 1.23.0-0"
 sources:
   - https://github.com/digital-ai/release-helm-chart
@@ -40,6 +40,6 @@ dependencies:
     condition: postgresql.install
 
   - name: release-assistant-helm-chart
-    version: 26.1.0-beta.318
+    version: 26.3.0-518.1100
     repository: "oci://docker.io/xebialabsunsupported"
     condition: release-assistant-helm-chart.install
