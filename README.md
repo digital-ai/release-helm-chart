@@ -502,33 +502,6 @@ kubectl delete namespace digitalai
 | `busyBox.image.pullPolicy`  | busyBox container image pull policy              | `IfNotPresent`    |
 | `busyBox.image.pullSecrets` | Specify docker-registry secret names as an array | `[]`              |
 
-### Ingress HAProxy
-
-| Name                                      | Description                                                | Value          |
-| ----------------------------------------- | ---------------------------------------------------------- | -------------- |
-| `haproxy-ingress.install`                 | Enable Haproxy Ingress helm subchart installation          | `false`        |
-| `haproxy-ingress.controller.ingressClass` | Name of the ingress class to route through this controller | `haproxy-dair` |
-| `haproxy-ingress.controller.service.type` | Kubernetes Service type for Controller                     | `LoadBalancer` |
-
-### Ingress Nginx
-
-| Name                                                            | Description                                                           | Value                       |
-| --------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------- |
-| `nginx-ingress-controller.install`                              | Enable NGINX Ingress Controller helm subchart installation            | `false`                     |
-| `nginx-ingress-controller.image.tag`                            | NGINX Ingress Controller image tag (immutable tags are recommended)   | `1.9.6-debian-12-r8`        |
-| `nginx-ingress-controller.defaultBackend.image.tag`             | Default backend image tag (immutable tags are recommended)            | `1.25.4-debian-12-r3`       |
-| `nginx-ingress-controller.extraArgs`                            | Additional command line arguments to pass to nginx-ingress-controller |                             |
-| `nginx-ingress-controller.extraArgs.ingress-class`              | Name of the IngressClass resource                                     | `nginx-dair`                |
-| `nginx-ingress-controller.ingressClassResource.name`            | Name of the IngressClass resource                                     | `nginx-dair`                |
-| `nginx-ingress-controller.ingressClassResource.controllerClass` | IngressClass identifier for the controller                            | `k8s.io/ingress-nginx-dair` |
-| `nginx-ingress-controller.replicaCount`                         | Desired number of Controller pods                                     | `1`                         |
-
-### Traffic exposure parameters
-
-| Name                                    | Description                            | Value          |
-| --------------------------------------- | -------------------------------------- | -------------- |
-| `nginx-ingress-controller.service.type` | Kubernetes Service type for Controller | `LoadBalancer` |
-
 ### Postgresql
 
 | Name                   | Description                                           | Value                 |

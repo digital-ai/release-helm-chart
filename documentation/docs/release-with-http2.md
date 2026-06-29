@@ -281,7 +281,7 @@ The following fields in cr yaml are updated to configure http2 for release.
 ```
 
 ### Accessing the release UI
-The ingress controller charts we support in the release helm chart(nginx and haproxy) do not support http2 backend. We need to setup external ingress controller seperately and configure to handle http2 backends, to expose the release server over public url. 
+The release helm chart does not include a bundled ingress controller with http2 backend support. You need to setup an external ingress controller separately and configure it to handle http2 backends, to expose the release server over a public URL.
 
 For accessing release UI without ingress controller setup, suggest to use kubectl port forward release http2 port to localhost and access release UI from localhost:5543.
 
