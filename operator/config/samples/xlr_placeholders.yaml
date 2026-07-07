@@ -99,10 +99,6 @@ spec:
     tls:
       enabled: true
       termination: edge
-  haproxy-ingress:
-    install: false
-  nginx-ingress-controller:
-    install: false
   postgresql:
     install: true
     primary:
