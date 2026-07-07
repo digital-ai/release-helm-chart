@@ -146,7 +146,7 @@ Get the server URL
 {{- define "release.serverUrl" -}}
     {{- $protocol := "http" }}
     {{- if .Values.ingress.enabled }}
-        {{- if or .Values.ingress.tls .Values.ssl.enabled }}
+        {{- if or .Values.ingress.tls .Values.ingress.extraTls .Values.ssl.enabled }}
             {{- $protocol = "https" }}
         {{- end }}
         {{- $ingressclass := index .Values "ingress" "annotations" "kubernetes.io/ingress.class" }}
