@@ -116,8 +116,9 @@ Remove Nginx regex from path.
 */}}
 {{- define "release.path.fullname" -}}
     {{- if and .Values.ingress.enabled }}
-        {{- $ingressclass := index .Values "ingress" "annotations" "kubernetes.io/ingress.class" }}
-        {{- if contains $ingressclass "nginx" }}
+        {{- $ingressclass := index .Values "ingress" "annotations" "kubernetes.io/ingress.class" | default "" }}
+        {{- $ingressclass2 := .Values.ingress.ingressClassName | default "" }}
+        {{- if or (contains $ingressclass "nginx") (contains $ingressclass2 "nginx") }}
             {{- $name := ( split "(" .Values.ingress.path)._0 }}
             {{- if $name }}
                 {{- printf "%s/" $name }}
@@ -149,9 +150,10 @@ Get the server URL
         {{- if or .Values.ingress.tls .Values.ingress.extraTls .Values.ssl.enabled }}
             {{- $protocol = "https" }}
         {{- end }}
-        {{- $ingressclass := index .Values "ingress" "annotations" "kubernetes.io/ingress.class" }}
+        {{- $ingressclass := (index .Values "ingress" "annotations" "kubernetes.io/ingress.class") | default "" }}
+        {{- $ingressclass2 := .Values.ingress.ingressClassName | default "" }}
         {{- $hostname := .Values.ingress.hostname }}
-        {{- if and (contains $ingressclass "nginx") (ne .Values.ingress.path "/") }}
+        {{- if and (or (contains $ingressclass "nginx") (contains $ingressclass2 "nginx")) (ne .Values.ingress.path "/") }}
             {{- $path := include "release.path.fullname" $ }}
             {{- if $path }}
                 {{- printf "%s://%s%s" $protocol $hostname $path }}
