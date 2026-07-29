@@ -112,32 +112,19 @@ Get the password secret.
 {{- end -}}
 
 {{/*
-Remove Nginx regex from path.
+{{/* Return normalized path suffix (e.g. "/xlr/") for ingress/route URLs, or empty if root path or no ingress/route */}}
 */}}
 {{- define "release.path.fullname" -}}
-    {{- if and .Values.ingress.enabled }}
-        {{- $ingressclass := index .Values "ingress" "annotations" "kubernetes.io/ingress.class" | default "" }}
-        {{- $ingressclass2 := .Values.ingress.ingressClassName | default "" }}
-        {{- if or (contains $ingressclass "nginx") (contains $ingressclass2 "nginx") }}
-            {{- $name := ( split "(" .Values.ingress.path)._0 }}
-            {{- if $name }}
-                {{- printf "%s/" $name }}
-            {{- else }}
-                {{- print "" }}
-            {{- end }}
-        {{- else -}}
-            {{- printf "%s/" .Values.ingress.path }}
-        {{- end -}}
-    {{- else -}}
-        {{- if .Values.route.enabled }}
-            {{- if hasSuffix "/" .Values.route.path }}
-                {{- printf "%s" .Values.route.path }}
-            {{- else }}
-                {{- printf "%s/" .Values.route.path }}
-            {{- end }}
-        {{- else -}}
-            {{- print "" }}
-        {{- end -}}
+    {{- $path := "" -}}
+    {{- if .Values.ingress.enabled -}}
+        {{- $path = (default "/" .Values.ingress.path) -}}
+    {{- else if .Values.route.enabled -}}
+        {{- $path = (default "/" .Values.route.path) -}}
+    {{- end -}}
+    {{- if and $path (ne $path "/") -}}
+        {{/* Strip regex patterns (e.g., "/xlr(.*)" to "/xlr") and include trailing slash */}}
+        {{- $path = (split "(" $path)._0 | trimSuffix "/" -}}
+        {{- printf "%s/" (default "" $path) -}}
     {{- end -}}
 {{- end -}}
 
@@ -146,51 +133,24 @@ Get the server URL
 */}}
 {{- define "release.serverUrl" -}}
     {{- $protocol := "http" }}
-    {{- if .Values.ingress.enabled }}
-        {{- if or .Values.ingress.tls .Values.ingress.extraTls .Values.ssl.enabled }}
-            {{- $protocol = "https" }}
-        {{- end }}
-        {{- $ingressclass := (index .Values "ingress" "annotations" "kubernetes.io/ingress.class") | default "" }}
-        {{- $ingressclass2 := .Values.ingress.ingressClassName | default "" }}
-        {{- $hostname := .Values.ingress.hostname }}
-        {{- if and (or (contains $ingressclass "nginx") (contains $ingressclass2 "nginx")) (ne .Values.ingress.path "/") }}
-            {{- $path := include "release.path.fullname" $ }}
-            {{- if $path }}
-                {{- printf "%s://%s%s" $protocol $hostname $path }}
-            {{- else }}
-                {{- printf "%s://%s" $protocol $hostname }}
-            {{- end }}
-        {{- else }}
-            {{- printf "%s://%s" $protocol $hostname }}
-        {{- end }}
+    {{- if or .Values.ingress.tls .Values.ingress.extraTls .Values.route.tls.enabled .Values.ssl.enabled -}}
+        {{- $protocol = "https" -}}
+    {{- end -}}
+    {{- $hostname := "" -}}
+    {{- if .Values.ingress.enabled -}}
+        {{- $hostname = .Values.ingress.hostname -}}
+    {{- else if .Values.route.enabled -}}
+        {{- $hostname = .Values.route.hostname -}}
     {{- else -}}
-        {{- if .Values.route.enabled }}
-            {{- if or .Values.route.tls.enabled .Values.ssl.enabled }}
-                {{- $protocol = "https" }}
-            {{- end }}
-            {{- $hostname := .Values.route.hostname }}
-            {{- $path := include "release.path.fullname" $ }}
-            {{- if $path }}
-                {{- printf "%s://%s%s" $protocol $hostname $path }}
-            {{- else }}
-                {{- printf "%s://%s" $protocol $hostname }}
-            {{- end }}
-        {{- else -}}
-            {{- if .Values.ssl.enabled }}
-                {{- $protocol = "https" }}
-            {{- end }}
-            {{- $hostname := (include "release.serviceHostname" .) }}
-            {{- if .Values.appHostname }}
-                {{- $hostname := (printf "%s://%s" .Values.appProtocol .Values.appHostname) }}
-            {{- end }}
-            {{- $path := include "release.path.fullname" $ }}
-            {{- if $path }}
-                {{- printf "%s://%s%s" $protocol $hostname $path }}
-            {{- else }}
-                {{- printf "%s://%s" $protocol $hostname }}
-            {{- end }}
-        {{- end }}
-    {{- end }}
+        {{- $hostname = (include "release.serviceHostname" .) -}}
+        {{- if .Values.appHostname -}}
+            {{- $hostname = .Values.appHostname -}}
+            {{- if .Values.appProtocol -}}
+                {{- $protocol = .Values.appProtocol -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+    {{- printf "%s://%s%s" $protocol $hostname (include "release.path.fullname" .) -}}
 {{- end -}}
 
 {{/*
