@@ -305,7 +305,7 @@ Compile all warnings into a single message, and call fail.
 Validate values of Release - TLS configuration for Ingress
 */}}
 {{- define "release.validateValues.ingress.tls" -}}
-{{- if and .Values.ingress.enabled .Values.ingress.tls (not (include "common.ingress.certManagerRequest" ( dict "annotations" .Values.ingress.annotations ))) (not .Values.ingress.selfSigned) (empty .Values.ingress.extraTls) }}
+{{- if and .Values.ingress.enabled .Values.ingress.tls (not (include "common.ingress.certManagerRequest" (dict "annotations" (default (dict) .Values.ingress.annotations)))) (not .Values.ingress.selfSigned) (empty .Values.ingress.extraTls) }}
 release: ingress.tls
     You enabled the TLS configuration for the default ingress hostname but
     you did not enable any of the available mechanisms to create the TLS secret
