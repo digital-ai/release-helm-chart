@@ -1339,7 +1339,7 @@ ingress:
   ## haproxy-ingress.github.io/timeout-client: "120s"
   ## haproxy-ingress.github.io/timeout-http-request: "120s"
   ##
-  annotations:
+  annotations: { }
 
   ## @param ingress.tls Enable TLS configuration for the hostname defined at `ingress.hostname` parameter
   ## TLS certificates will be retrieved from a TLS secret with name: {{- printf "%s-ingress-tls" .Values.ingress.hostname }}
