@@ -37,10 +37,10 @@ fi
 
 opm index add \
   --bundles docker.io/$DOCKER_HUB_REPOSITORY/release-operator-bundle:$RELEASE_EXPLICIT \
-  --tag docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.3 \
+  --tag docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:27.1 \
   --generate
-docker build -f index.Dockerfile -t docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.3 .
-docker push docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:26.3
+docker build -f index.Dockerfile -t docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:27.1 .
+docker push docker.io/$DOCKER_HUB_REPOSITORY/release-operator-index:27.1
 
 oc login $REDHAT_OC_URL --username=$REDHAT_OC_LOGIN --password=$REDHAT_OC_PASSWORD
 oc delete -f operator/test/test-operator-catalogsource.yaml

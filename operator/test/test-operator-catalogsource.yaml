@@ -5,8 +5,8 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: docker.io/xebialabsunsupported/release-operator-index:26.3
-  displayName: Digital.ai Release Test 26.3 Operators
+  image: docker.io/xebialabsunsupported/release-operator-index:27.1
+  displayName: Digital.ai Release Test 27.1 Operators
   publisher: Digital.ai
   updateStrategy:
     registryPoll:
