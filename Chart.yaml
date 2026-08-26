@@ -40,6 +40,6 @@ dependencies:
     condition: postgresql.install
 
   - name: release-assistant-helm-chart
-    version: 26.1.0-beta.319
+    version: 26.3.0-826.1100
     repository: "oci://docker.io/xebialabsunsupported"
     condition: release-assistant-helm-chart.install
