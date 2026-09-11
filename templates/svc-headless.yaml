@@ -28,5 +28,15 @@ spec:
       port: {{ .Values.service.ports.releaseHttp }}
       targetPort: {{ .Values.service.portNames.releaseHttp }}
     {{- end }}
+    {{- if .Values.cluster.discovery.dnsBootstrap.enabled }}
+    - name: {{ .Values.cluster.discovery.dnsBootstrap.portName }}
+      port: {{ .Values.cluster.management.port }}
+      targetPort: {{ .Values.cluster.management.port }}
+    {{- end }}
+    {{- if .Values.cluster.mode }}
+    - name: remoting
+      port: {{ .Values.cluster.node.clusterPort }}
+      targetPort: {{ .Values.cluster.node.clusterPort }}
+    {{- end }}
   selector: {{ include "common.labels.matchLabels" . | nindent 4 }}
   publishNotReadyAddresses: true

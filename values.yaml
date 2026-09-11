@@ -62,15 +62,21 @@ forceRemoveMissingTypes: false
 ## @param cluster.node.datacenter The datacenter name that node belongs to.
 ## @param cluster.mode This is to specify if the HA setup is needed and to specify the HA mode. Possible values: "default", "hot-standby", "full"
 ## @param cluster.manager This is to specify the manager for the cluster. Possible values are xlr-legacy and xlr-pekko-native. Each defines different discovery and downing strategies.
+## `cluster.legacy.*` values are used only when `cluster.manager=xlr-legacy`.
+## `cluster.discovery.dnsBootstrap.*` values are used only when `cluster.manager=xlr-pekko-native`.
 ## @param cluster.name This is to specify the cluster name.
 ##
 cluster:
   node:
     datacenter: default
+    ## @param cluster.node.clusterPort Pekko remoting port used for intra-cluster communication.
+    clusterPort: 5531
   mode: full
   manager: xlr-legacy
   name: xl-release_cluster
   management:
+    ## @param cluster.management.port Pekko management HTTP port used for cluster bootstrap and management endpoints.
+    port: 7636
     ssl:
       ## @param cluster.management.ssl.enabled Enable SSL on pekko management
       enabled: false
@@ -118,6 +124,40 @@ cluster:
       truststoreType: "pkcs12"
       ## @param cluster.remote.sslEngine.truststore Truststore content in base64 format or it can reference the existing secret.
       truststore: {}
+  legacy:
+    hostnameDiscovery:
+      ## @param cluster.legacy.hostnameDiscovery.enabled Enable DNS hostname construction for xlr-legacy nodes.
+      ## This value is used only when `cluster.manager=xlr-legacy`.
+      enabled: false
+      ## @param cluster.legacy.hostnameDiscovery.headlessServiceName Headless Service name used to build node FQDN. If empty, defaults to <release-fullname>-headless.
+      ## This value is used only when `cluster.manager=xlr-legacy`.
+      headlessServiceName: ""
+      ## @param cluster.legacy.hostnameDiscovery.usePodNamespace Use runtime pod namespace (POD_NAMESPACE) when building node FQDN.
+      ## This value is used only when `cluster.manager=xlr-legacy`.
+      usePodNamespace: true
+      ## @param cluster.legacy.hostnameDiscovery.clusterDomain Kubernetes cluster domain for node FQDN. If empty, defaults to `clusterDomain`.
+      ## This value is used only when `cluster.manager=xlr-legacy`.
+      clusterDomain: ""
+  discovery:
+    dnsBootstrap:
+      ## @param cluster.discovery.dnsBootstrap.enabled Enable Pekko DNS-based cluster bootstrap via headless service discovery.
+      ## This value is used only when `cluster.manager=xlr-pekko-native`.
+      enabled: false
+      ## @param cluster.discovery.dnsBootstrap.serviceName Headless service DNS name used for contact-point discovery. If empty, defaults to <release-fullname>-headless.
+      ## This value is used only when `cluster.manager=xlr-pekko-native`.
+      serviceName: ""
+      ## @param cluster.discovery.dnsBootstrap.portName Named service port used by Pekko management contact-point discovery.
+      ## This value is used only when `cluster.manager=xlr-pekko-native`.
+      portName: management
+      ## @param cluster.discovery.dnsBootstrap.protocol Protocol used by Pekko management contact-point discovery.
+      ## This value is used only when `cluster.manager=xlr-pekko-native`.
+      protocol: tcp
+      ## @param cluster.discovery.dnsBootstrap.requiredContactPointNr Number of required contact points before bootstrap joins/forms cluster.
+      ## This value is used only when `cluster.manager=xlr-pekko-native`.
+      requiredContactPointNr: 2
+      ## @param cluster.discovery.dnsBootstrap.filterOnFallbackPort Enables/disables filtering discovered endpoints by fallback port.
+      ## This value is used only when `cluster.manager=xlr-pekko-native`.
+      filterOnFallbackPort: false
 
 ## @param forceUpgrade It can be used to perform an upgrade in non-interactive mode by passing flag -force-upgrades while starting a service.
 ##
@@ -947,7 +987,7 @@ configuration:
             id = ${XL_NODE_NAME}
             hostname = ${XL_NODE_NAME}
             datacenter = ${XLR_CLUSTER_DATACENTER}
-            clusterPort = 5531
+            clusterPort = {{ .Values.cluster.node.clusterPort }}
           }
         }
       }
@@ -969,6 +1009,9 @@ configuration:
           pekko {
             loglevel = "INFO"
             actor.debug.receive = off
+            {{- if and .Values.cluster.discovery.dnsBootstrap.enabled (eq .Values.cluster.manager "xlr-pekko-native") }}
+            discovery.method = "pekko-dns"
+            {{- end }}
             remote {
                 log-received-messages = off
                 log-sent-messages = off
@@ -1022,6 +1065,26 @@ configuration:
                   trustStoreType = {{ .Values.cluster.management.ssl.truststoreType }}  
                 }  
               }  
+            }
+          }
+          {{- end }}
+          {{- if and .Values.cluster.discovery.dnsBootstrap.enabled (eq .Values.cluster.manager "xlr-pekko-native") }}
+          xlr-pekko-native {
+            pekko {
+              management {
+                http {
+                  port = {{ .Values.cluster.management.port }}
+                }
+                cluster.bootstrap.contact-point {
+                  filter-on-fallback-port = {{ .Values.cluster.discovery.dnsBootstrap.filterOnFallbackPort }}
+                }
+                cluster.bootstrap.contact-point-discovery {
+                  service-name = "{{ default (printf "%s-headless" (include "common.names.fullname" .)) .Values.cluster.discovery.dnsBootstrap.serviceName }}"
+                  port-name = "{{ .Values.cluster.discovery.dnsBootstrap.portName }}"
+                  protocol = "{{ .Values.cluster.discovery.dnsBootstrap.protocol }}"
+                  required-contact-point-nr = {{ .Values.cluster.discovery.dnsBootstrap.requiredContactPointNr }}
+                }
+              }
             }
           }
           {{- end }}

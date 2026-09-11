@@ -22,6 +22,12 @@ spec:
         {{- else }}
         - port: {{ .Values.service.ports.releaseHttp }}
         {{- end }}
+        {{- if .Values.cluster.discovery.dnsBootstrap.enabled }}
+        - port: {{ .Values.cluster.management.port }}
+        {{- end }}
+        {{- if .Values.cluster.mode }}
+        - port: {{ .Values.cluster.node.clusterPort }}
+        {{- end }}
       {{- if not .Values.networkPolicy.allowExternal }}
       from:
         - podSelector:

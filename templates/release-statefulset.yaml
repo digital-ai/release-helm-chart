@@ -167,6 +167,22 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            {{- if and (eq .Values.cluster.manager "xlr-legacy") .Values.cluster.legacy.hostnameDiscovery.enabled }}
+            {{- $legacyHeadlessServiceName := default (printf "%s-headless" (include "common.names.fullname" .)) .Values.cluster.legacy.hostnameDiscovery.headlessServiceName }}
+            {{- $legacyClusterDomain := default .Values.clusterDomain .Values.cluster.legacy.hostnameDiscovery.clusterDomain }}
+            {{- if .Values.cluster.legacy.hostnameDiscovery.usePodNamespace }}
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- end }}
+            - name: XL_NODE_NAME
+              {{- if .Values.cluster.legacy.hostnameDiscovery.usePodNamespace }}
+              value: {{ printf "$(POD_NAME).%s.$(POD_NAMESPACE).svc.%s" $legacyHeadlessServiceName $legacyClusterDomain | quote }}
+              {{- else }}
+              value: {{ printf "$(POD_NAME).%s.%s.svc.%s" $legacyHeadlessServiceName (include "common.names.namespace" .) $legacyClusterDomain | quote }}
+              {{- end }}
+            {{- end }}
             - name: ACCEPT_EULA
               {{- if .Values.licenseAcceptEula }}
               value: "y"

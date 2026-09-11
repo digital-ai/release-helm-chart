@@ -101,6 +101,11 @@ kubectl delete namespace digitalai
 | `logback.scanEnabled`        | Enables scanning of logback.xml.                                                                                                                                                                                    | `true`       |
 | `logback.scanPeriod`         | Interval for checking logback.xml configuration.                                                                                                                                                                    | `30 seconds` |
 
+Cluster manager compatibility notes:
+
+- `cluster.legacy.*` values are used only when `cluster.manager=xlr-legacy`.
+- `cluster.discovery.dnsBootstrap.*` values are used only when `cluster.manager=xlr-pekko-native`.
+
 ### Release hooks
 
 | Name                                                                           | Description                                                                                                                 | Value                                                                                                                                                                                   |
