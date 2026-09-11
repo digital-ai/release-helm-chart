@@ -1,0 +1,32 @@
+suite: Test Release Headless Service
+templates:
+  - svc-headless.yaml
+tests:
+  - it: should not expose pekko ports by default
+    values:
+      - ../values/basic.yaml
+    asserts:
+      - equal:
+          path: spec.ports
+          value:
+            - name: release-http
+              port: 80
+              targetPort: release-http
+
+  - it: should expose management and remoting ports when dns bootstrap is enabled
+    values:
+      - ../values/basic.yaml
+      - ../values/cluster-dns-bootstrap.yaml
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: management
+            port: 7636
+            targetPort: 7636
+      - contains:
+          path: spec.ports
+          content:
+            name: remoting
+            port: 5531
+            targetPort: 5531

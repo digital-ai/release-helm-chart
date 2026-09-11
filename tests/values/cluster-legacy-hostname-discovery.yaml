@@ -1,0 +1,8 @@
+cluster:
+  manager: xlr-legacy
+  legacy:
+    hostnameDiscovery:
+      enabled: true
+      headlessServiceName: saas-digitalai-release-headless
+      usePodNamespace: true
+      clusterDomain: cluster.local

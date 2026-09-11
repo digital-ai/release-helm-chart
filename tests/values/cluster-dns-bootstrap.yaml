@@ -1,0 +1,7 @@
+cluster:
+  manager: xlr-pekko-native
+  discovery:
+    dnsBootstrap:
+      enabled: true
+      serviceName: saas-digitalai-release-headless
+      requiredContactPointNr: 2

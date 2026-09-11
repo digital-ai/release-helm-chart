@@ -1,0 +1,33 @@
+suite: Test Release DNS Bootstrap Configuration
+templates:
+  - configuration.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+tests:
+  - it: should not include dns bootstrap config by default
+    values:
+      - ../values/basic.yaml
+    asserts:
+      - notMatchRegex:
+          path: data.default-conf_xl-release-conf-template
+          pattern: 'discovery\.method\s*=\s*"pekko-dns"'
+        documentIndex: 0
+
+  - it: should include dns bootstrap config for xlr-pekko-native
+    values:
+      - ../values/basic.yaml
+      - ../values/cluster-dns-bootstrap.yaml
+    asserts:
+      - matchRegex:
+          path: data.default-conf_xl-release-conf-template
+          pattern: 'discovery\.method\s*=\s*"pekko-dns"'
+        documentIndex: 0
+      - matchRegex:
+          path: data.default-conf_xl-release-conf-template
+          pattern: 'service-name\s*=\s*"saas-digitalai-release-headless"'
+        documentIndex: 0
+      - matchRegex:
+          path: data.default-conf_xl-release-conf-template
+          pattern: 'required-contact-point-nr\s*=\s*2'
+        documentIndex: 0
