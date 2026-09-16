@@ -282,6 +282,104 @@ Get the report db password
 {{- end -}}
 
 {{/*
+Get the assistant db name
+*/}}
+{{- define "release.assistantDbName" -}}
+    {{- if and .Values.external.db.enabled .Values.external.db.assistant.database -}}
+        {{- .Values.external.db.assistant.database -}}
+    {{- else -}}
+        dai_assistant
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Get the assistant db URL suffix without jdbc: prefix
+*/}}
+{{- define "release.assistantDbUrlSuffix" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- if .Values.external.db.enabled -}}
+        {{- if .Values.external.db.assistant.url -}}
+            {{- if hasPrefix "jdbc:" .Values.external.db.assistant.url -}}
+                {{- trimPrefix "jdbc:" .Values.external.db.assistant.url -}}
+            {{- else -}}
+                {{- .Values.external.db.assistant.url -}}
+            {{- end -}}
+        {{- else if .Values.external.db.main.url -}}
+            {{- $database := include "release.assistantDbName" . -}}
+            {{- $mainUrl := .Values.external.db.main.url -}}
+            {{- if hasPrefix "jdbc:" $mainUrl -}}
+                {{- $mainUrl = trimPrefix "jdbc:" $mainUrl -}}
+            {{- end -}}
+            {{- regexReplaceAll "/[^/?]+(\\?.*)?$" $mainUrl (printf "/%s${1}" $database) -}}
+        {{- end -}}
+    {{- else if .Values.postgresql.install -}}
+        postgresql://{{ include "postgresql.subchart" . }}:{{ include "release.postgresql.service.port" . }}/{{ include "release.assistantDbName" . }}
+    {{- else if $assistant.config.db.urlSuffix -}}
+        {{- $assistant.config.db.urlSuffix -}}
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Get the assistant db username
+*/}}
+{{- define "release.assistantUsername" -}}
+    {{- if .Values.external.db.enabled -}}
+        {{- if .Values.external.db.assistant.username -}}
+            {{- .Values.external.db.assistant.username -}}
+        {{- else -}}
+            {{- .Values.external.db.main.username -}}
+        {{- end -}}
+    {{- else if .Values.postgresql.install -}}
+        dai-assistant
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Get the assistant db password
+*/}}
+{{- define "release.assistantPassword" -}}
+    {{- if .Values.external.db.enabled -}}
+        {{- if .Values.external.db.assistant.password -}}
+            {{- .Values.external.db.assistant.password -}}
+        {{- else -}}
+            {{- .Values.external.db.main.password -}}
+        {{- end -}}
+    {{- else if .Values.postgresql.install -}}
+        dai-assistant
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Return effective AI enablement for Release.
+AI is enabled when explicitly configured or when Ask Release subchart install is enabled.
+*/}}
+{{- define "release.aiEnabled" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- if or .Values.ai.enabled $assistant.install -}}
+        true
+    {{- else -}}
+        false
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Return effective assistant URL for Release.
+Prefer explicit ai.assistantUrl; otherwise derive in-cluster URL when Ask Release subchart is installed.
+*/}}
+{{- define "release.assistantUrl" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- if .Values.ai.assistantUrl -}}
+        {{- .Values.ai.assistantUrl -}}
+    {{- else if $assistant.install -}}
+        {{- $assistantName := printf "%s-assistant" .Release.Name -}}
+        {{- if $assistant.fullnameOverride -}}
+            {{- $assistantName = tpl $assistant.fullnameOverride . -}}
+        {{- end -}}
+        {{- printf "http://%s.%s:8090" $assistantName (include "common.names.namespace" .) -}}
+    {{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "release.validateValues" -}}
