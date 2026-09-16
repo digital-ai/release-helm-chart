@@ -95,7 +95,7 @@ cluster:
       ## @param cluster.management.ssl.truststore Truststore content in base64 format or it can reference the existing secret.
       truststore: {}
 
-  remote:      
+  remote:
     sslEngine:
       ## @param cluster.remote.sslEngine.enabled Enable SSL on pekko management
       enabled: false
@@ -104,7 +104,7 @@ cluster:
       ## @param cluster.remote.sslEngine.requireMutualAuthentication Enable mutual auth to ensure only legitimate users are connected to the network.
       requireMutualAuthentication: false
       ## @param cluster.remote.sslEngine.enabledAlgorithms List of recommended algorithms to use with TLS 1.2
-      enabledAlgorithms: 
+      enabledAlgorithms:
       - "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256"
       - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
       - "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
@@ -290,7 +290,7 @@ hooks:
 
           SECRET_NAME="{{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.getLicense.name "context" $ ) }}"
           FILE_PATH="/opt/xebialabs/xl-release-server/conf/xl-release-license.lic"
-          
+
           if kubectl get secret "$SECRET_NAME" > /dev/null 2>&1; then
             echo "Secret '$SECRET_NAME' exists skipping creation."
           else
@@ -398,7 +398,7 @@ hooks:
           SECRET_NAME="{{ include "common.tplvalues.render" ( dict "value" $.Values.hooks.genSelfSigned.name "context" $ ) }}"
           KEYSTORE_FILE_PATH="/opt/xebialabs/xl-release-server/conf/keystore.{{- .Values.ssl.keystoreType -}}"
           CERT_FILE_PATH="/opt/xebialabs/xl-release-server/conf/public.cert"
-          
+
           if kubectl get secret "$SECRET_NAME" > /dev/null 2>&1; then
             echo "Secret '$SECRET_NAME' exists skipping creation."
           else
@@ -425,7 +425,7 @@ hooks:
     installCommand: |
       #!/bin/sh
 
-      cd /tmp; 
+      cd /tmp;
       /opt/xebialabs/xl-client/xl kube upgrade \
         --skip-context-check \
         --local-repo /opt/xebialabs/xl-op-blueprints \
@@ -547,6 +547,15 @@ external:
       password:
       ## @param external.db.report.maxPoolSize Report database max pool size for Release
       maxPoolSize: ""
+    assistant:
+      ## @param external.db.assistant.url Assistant database URL for Ask Release
+      url: ""
+      ## @param external.db.assistant.database Assistant database name for Ask Release
+      database: dai_assistant
+      ## @param external.db.assistant.username Assistant database username for Ask Release
+      username:
+      ## @param external.db.assistant.password Assistant database password for Ask Release
+      password:
 
 ## @section Release keystore and truststore parameters
 
@@ -605,7 +614,7 @@ networkPolicy:
 ## Metrics
 ##
 metrics:
-  jmx: 
+  jmx:
     ## @param metrics.jmx.enabled Enable exposing Release metrics to be gathered.
     ## Flag to expose internal and system metrics over Java Management Extensions (JMX).
     ## This is to enable the use of monitoring systems that can read JMX data, with XL Products.
@@ -691,7 +700,7 @@ metrics:
           name: '{{ template "common.names.fullname" . }}'
           key: releaseUsername
           optional: false
-        password: 
+        password:
           name: '{{ template "common.names.fullname" . }}'
           key: releasePassword
           optional: false
@@ -978,7 +987,7 @@ configuration:
     path: "node-conf/xl-release.conf.template"
     mode: 0660
     content: |
-      # The ${APP_HOME}/node-conf/xl-release.conf file provides node specific properties, which are then merged with the 
+      # The ${APP_HOME}/node-conf/xl-release.conf file provides node specific properties, which are then merged with the
       # ${APP_HOME}/conf/xl-release.conf file by the xl-platform when the instance is started.
       # The ${APP_HOME}/node-conf takes precedance over ${APP_HOME}/conf/xl-release.conf and this is specified in ${APP_HOME}/conf/xlr-wrapper-linux.conf
       xl {
@@ -991,7 +1000,7 @@ configuration:
           }
         }
       }
-      
+
   ## @extra configuration.default-conf_xl-release-conf-template The configuration for the xl-release.conf.template file
   ## @param configuration.default-conf_xl-release-conf-template.path The path for the xl-release.conf.template file
   ## @param configuration.default-conf_xl-release-conf-template.mode The access mode for the xl-release.conf.template file
@@ -1024,26 +1033,26 @@ configuration:
 
             {{- if .Values.cluster.remote.sslEngine.enabled }}
             remote {
-              artery {  
-                ssl {  
-                  config-ssl-engine {  
+              artery {
+                ssl {
+                  config-ssl-engine {
                     enabled-algorithms = [
                       {{- $last := sub (len .Values.cluster.remote.sslEngine.enabledAlgorithms) 1 }}
                       {{ range $index, $v := .Values.cluster.remote.sslEngine.enabledAlgorithms }}
                       {{ $v | quote }}{{ if ne $index $last }},{{ end }}
                       {{- end }}
-                    ]  
-                    key-password = "${?CLUSTER_REMOTE_SSL_ENGINE_KEY_PASSWORD}"  
-                    key-store = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.keystore "default" (printf "cluster_remote_keystore.%s" .Values.cluster.remote.sslEngine.keystoreType) "context" $) }}"  
-                    key-store-password = "${?CLUSTER_REMOTE_SSL_ENGINE_KEYSTORE_PASSWORD}"  
-                    trust-store = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.truststore "default" (printf "cluster_remote_truststore.%s" .Values.cluster.remote.sslEngine.truststoreType) "context" $) }}"  
-                    trust-store-password = "${?CLUSTER_REMOTE_SSL_ENGINE_TRUSTSTORE_PASSWORD}"  
+                    ]
+                    key-password = "${?CLUSTER_REMOTE_SSL_ENGINE_KEY_PASSWORD}"
+                    key-store = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.keystore "default" (printf "cluster_remote_keystore.%s" .Values.cluster.remote.sslEngine.keystoreType) "context" $) }}"
+                    key-store-password = "${?CLUSTER_REMOTE_SSL_ENGINE_KEYSTORE_PASSWORD}"
+                    trust-store = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.remote.sslEngine.truststore "default" (printf "cluster_remote_truststore.%s" .Values.cluster.remote.sslEngine.truststoreType) "context" $) }}"
+                    trust-store-password = "${?CLUSTER_REMOTE_SSL_ENGINE_TRUSTSTORE_PASSWORD}"
                     hostname-verification = {{ if .Values.cluster.remote.sslEngine.hostnameVerification }}on{{ else }}off{{ end }}
-                    require-mutual-authentication = {{ if .Values.cluster.remote.sslEngine.requireMutualAuthentication }}on{{ else }}off{{ end }}  
-                  }  
-                }  
-                transport = tls-tcp  
-              }  
+                    require-mutual-authentication = {{ if .Values.cluster.remote.sslEngine.requireMutualAuthentication }}on{{ else }}off{{ end }}
+                  }
+                }
+                transport = tls-tcp
+              }
             }
             {{- end }}
           }
@@ -1051,20 +1060,20 @@ configuration:
           xlr-pekko-native {
             pekko {
               management {
-                http {  
-                  route-providers-read-only = true  
-                }  
-                ssl {  
+                http {
+                  route-providers-read-only = true
+                }
+                ssl {
                   enabled = true
-                  keyPassword = "${?CLUSTER_MANAGEMENT_SSL_KEY_PASSWORD}"  
-                  keyStore = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.keystore "default" (printf "cluster_management_keystore.%s" .Values.cluster.management.ssl.keystoreType) "context" $) }}"  
-                  keyStorePassword = "${?CLUSTER_MANAGEMENT_SSL_KEYSTORE_PASSWORD}"  
-                  keystoreType = {{ .Values.cluster.management.ssl.keystoreType }}  
-                  trustStore = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.truststore "default" (printf "cluster_management_truststore.%s" .Values.cluster.management.ssl.truststoreType) "context" $) }}"  
-                  trustStorePassword = "${?CLUSTER_MANAGEMENT_SSL_TRUSTSTORE_PASSWORD}"  
-                  trustStoreType = {{ .Values.cluster.management.ssl.truststoreType }}  
-                }  
-              }  
+                  keyPassword = "${?CLUSTER_MANAGEMENT_SSL_KEY_PASSWORD}"
+                  keyStore = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.keystore "default" (printf "cluster_management_keystore.%s" .Values.cluster.management.ssl.keystoreType) "context" $) }}"
+                  keyStorePassword = "${?CLUSTER_MANAGEMENT_SSL_KEYSTORE_PASSWORD}"
+                  keystoreType = {{ .Values.cluster.management.ssl.keystoreType }}
+                  trustStore = "/opt/xebialabs/xl-release-server/certs/{{ include "secrets.key" (dict "secretRef" .Values.cluster.management.ssl.truststore "default" (printf "cluster_management_truststore.%s" .Values.cluster.management.ssl.truststoreType) "context" $) }}"
+                  trustStorePassword = "${?CLUSTER_MANAGEMENT_SSL_TRUSTSTORE_PASSWORD}"
+                  trustStoreType = {{ .Values.cluster.management.ssl.truststoreType }}
+                }
+              }
             }
           }
           {{- end }}
@@ -1089,7 +1098,7 @@ configuration:
           }
           {{- end }}
         }
-      
+
         server {
             http2 {
                 enabled = ${XLR_HTTP2_ENABLED}
@@ -1103,12 +1112,12 @@ configuration:
                 }
             }
         }
-    
+
         license {
           kind = ${XL_LICENSE_KIND}
           product = "xl-release"
         }
-    
+
         database {
           db-driver-classname="${XL_DB_DRIVER}"
           db-password="""${XL_DB_PASSWORD}"""
@@ -1116,7 +1125,7 @@ configuration:
           db-username=${XL_DB_USERNAME}
           max-pool-size=${XL_DB_MAX_POOL_SIZE}
         }
-    
+
         # TODO Release does not support (H2) running in one schema.
         reporting {
           db-driver-classname="${XL_DB_DRIVER}"
@@ -1143,7 +1152,7 @@ configuration:
           }
           {{- end }}
         }
-    
+
         # Task queue
         queue {
           embedded=${ENABLE_EMBEDDED_QUEUE}
@@ -1154,7 +1163,7 @@ configuration:
           username="${XLR_TASK_QUEUE_USERNAME}"
           queueType="${XLR_TASK_QUEUE_TYPE}"
         }
-    
+
         metrics {
           enabled = ${XL_METRICS_ENABLED}
         }
@@ -1270,20 +1279,20 @@ configuration:
           enabled = {{ .Values.maintenanceMode.enabled }}
           restrictApiAccess = {{ .Values.maintenanceMode.restrictApiAccess }}
         }
-      
+
         features {
           ai {
-            enabled = {{ .Values.ai.enabled }}
-            assistant-url = {{ .Values.ai.assistantUrl | quote }}
+            enabled = {{ include "release.aiEnabled" . }}
+            assistant-url = {{ include "release.assistantUrl" . | quote }}
           }
         }
-      }      
+      }
 
       management.endpoint.prometheus.enabled = {{ .Values.metrics.prometheus.enabled | default false }}
-      
+
       {{ .Values.xlReleaseConfExtra }}
-      
-      
+
+
 ## @param extraConfiguration Configuration file content: extra configuration to be appended to Release configuration
 ## Use this instead of `configuration` to add more configuration
 ##
@@ -1618,11 +1627,11 @@ storage:
       ## @param storage.reportingEngine.s3.enabled Enables S3 storage for the engine reports. If not enabled it is using default file-system storage in the Release reports directory.
       enabled: false
       ## @param storage.reportingEngine.s3.bucket S3 bucket name, the bucket needs to be already created
-      bucket: 
+      bucket:
       ## @param storage.reportingEngine.s3.baseKey The S3 base key that will be used as a base for any S3 key to access objects in the storage. The separator needs to be /.
-      baseKey: 
+      baseKey:
       ## @param storage.reportingEngine.s3.region Configure the region with which the AWS SDK should communicate.
-      region: 
+      region:
       ## @param storage.reportingEngine.s3.endpointUri Custom endpoint URI in case you are using some other S3 like storage (not AWS S3)
       endpointUri:
   ## Job log storage configuration
@@ -1636,11 +1645,11 @@ storage:
       ## @param storage.jobLog.s3.enabled Enables S3 storage for the Job logs. If not enabled it is using default file-system storage in the Release reports directory.
       enabled: false
       ## @param storage.jobLog.s3.bucket S3 bucket name, the bucket needs to be already created
-      bucket: 
+      bucket:
       ## @param storage.jobLog.s3.baseKey The S3 base key that will be used as a base for any S3 key to access objects in the storage. The separator needs to be /.
-      baseKey: 
+      baseKey:
       ## @param storage.jobLog.s3.region Configure the region with which the AWS SDK should communicate.
-      region: 
+      region:
       ## @param storage.jobLog.s3.endpointUri Custom endpoint URI in case you are using some other S3 like storage (not AWS S3)
       endpointUri:
 
@@ -1875,7 +1884,7 @@ containerSecurityContext:
 resourcesPreset: "micro"
 ## @param resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
 ## Example:
-## resources: 
+## resources:
 ##   limits:
 ##     cpu: 1000m
 ##     memory: 2Gi
@@ -1944,7 +1953,7 @@ startupProbe:
 
 ## Add an horizontal pod autoscaler
 ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-## @param autoscaling.enabled Deploy a HorizontalPodAutoscaler object for the Release statefulset. metrics-server needs to be installed or enabled as addon on the cluster if autoscaling is enabled. 
+## @param autoscaling.enabled Deploy a HorizontalPodAutoscaler object for the Release statefulset. metrics-server needs to be installed or enabled as addon on the cluster if autoscaling is enabled.
 ## @param autoscaling.minReplicas Minimum number of replicas to scale back
 ## @param autoscaling.maxReplicas Maximum number of replicas to scale out
 ## @param autoscaling.metrics [array] Metrics to use when deciding to scale the deployment (evaluated as a template)
@@ -2046,7 +2055,7 @@ volumePermissions:
   ## @param volumePermissions.script Script for changing the owner and group of the persistent volume(s). Paths are declared in the 'paths' variable.
   script: |
     #!/bin/bash
-    
+
     declare -a paths=( {{ range $path := .Values.persistence.paths }} "{{ $path }}"{{ end }} )
     for path in "${paths[@]}"; do
       echo "Changing ownership to {{ .Values.containerSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} for ${path}"
@@ -2073,7 +2082,7 @@ volumePermissions:
   ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
   ## and not the below volumePermissions.containerSecurityContext.runAsUser
   ## @param volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
-  ## @param volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only  
+  ## @param volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
   ## @param volumePermissions.containerSecurityContext.runAsUser User ID for the init container
   ## @param volumePermissions.containerSecurityContext.runAsGroup Group ID for the init container
   ## @param volumePermissions.containerSecurityContext.runAsNonRoot Set volume permissions init container's Security Context runAsNonRoot
@@ -2264,7 +2273,7 @@ postgresql:
       tag: 12-debian-12-r51
 
     ## @param postgresql.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Controls whether a process can gain more privileges than its parent process
-    ## @param postgresql.volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only    
+    ## @param postgresql.volumePermissions.containerSecurityContext.readOnlyRootFilesystem Mounts the container's root filesystem as read-only
     ## @param postgresql.volumePermissions.containerSecurityContext.runAsUser User ID for the init container
     ## @param postgresql.volumePermissions.containerSecurityContext.runAsGroup Group ID for the init container
     ## @param postgresql.volumePermissions.containerSecurityContext.runAsNonRoot Set volume permissions init container's Security Context runAsNonRoot
@@ -2282,3 +2291,10 @@ postgresql:
 ## @param release-assistant-helm-chart.install
 release-assistant-helm-chart:
   install: false
+  ## @param fullnameOverride String to fully override generated assistant resource names
+  fullnameOverride: "{{ .Release.Name }}-assistant"
+  config:
+    db:
+      urlSuffix: 'postgresql://{{ .Release.Name }}-postgresql:5432/dai_assistant'
+      username: 'dai-assistant'
+      password: 'dai-assistant'
