@@ -2298,3 +2298,12 @@ release-assistant-helm-chart:
       urlSuffix: 'postgresql://{{ .Release.Name }}-postgresql:5432/dai_assistant'
       username: 'dai-assistant'
       password: 'dai-assistant'
+  llm-service-helm-chart:
+    install: false
+    config:
+      database:
+        server: '{{ .Release.Name }}-postgresql'
+        port: 5432
+        database: 'dai_llm'
+        username: 'dai_llm'
+        password: 'dai_llm'
