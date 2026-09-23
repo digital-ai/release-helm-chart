@@ -350,6 +350,58 @@ Get the assistant db password
 {{- end -}}
 
 {{/*
+Return true when optional LLM Service subchart is installed through Ask Release subchart.
+*/}}
+{{- define "release.llmServiceEnabled" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- $llm := index $assistant "llm-service-helm-chart" -}}
+    {{- if and $assistant.install $llm.install -}}
+        true
+    {{- else -}}
+        false
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Get the llm-service db name
+*/}}
+{{- define "release.llmServiceDbName" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- $llm := index $assistant "llm-service-helm-chart" -}}
+    {{- if and $llm $llm.config $llm.config.database $llm.config.database.database -}}
+        {{- $llm.config.database.database -}}
+    {{- else -}}
+        dai-llm-db
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Get the llm-service db username
+*/}}
+{{- define "release.llmServiceUsername" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- $llm := index $assistant "llm-service-helm-chart" -}}
+    {{- if and $llm $llm.config $llm.config.database $llm.config.database.username -}}
+        {{- $llm.config.database.username -}}
+    {{- else -}}
+        dai_llm
+    {{- end -}}
+{{- end -}}
+
+{{/*
+Get the llm-service db password
+*/}}
+{{- define "release.llmServicePassword" -}}
+    {{- $assistant := index .Values "release-assistant-helm-chart" -}}
+    {{- $llm := index $assistant "llm-service-helm-chart" -}}
+    {{- if and $llm $llm.config $llm.config.database $llm.config.database.password -}}
+        {{- $llm.config.database.password -}}
+    {{- else -}}
+        dai_llm
+    {{- end -}}
+{{- end -}}
+
+{{/*
 Return effective AI enablement for Release.
 AI is enabled when explicitly configured or when Ask Release subchart install is enabled.
 */}}
