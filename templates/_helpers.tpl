@@ -371,7 +371,7 @@ Get the llm-service db name
     {{- if and $llm $llm.config $llm.config.database $llm.config.database.database -}}
         {{- $llm.config.database.database -}}
     {{- else -}}
-        dai_llm
+        dai-llm-db
     {{- end -}}
 {{- end -}}
 

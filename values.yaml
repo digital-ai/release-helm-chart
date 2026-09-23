@@ -551,7 +551,7 @@ external:
       ## @param external.db.assistant.url Assistant database URL for Ask Release
       url: ""
       ## @param external.db.assistant.database Assistant database name for Ask Release
-      database: dai_assistant
+      database: dai-assistant-db
       ## @param external.db.assistant.username Assistant database username for Ask Release
       username:
       ## @param external.db.assistant.password Assistant database password for Ask Release
@@ -2295,7 +2295,7 @@ release-assistant-helm-chart:
   fullnameOverride: "{{ .Release.Name }}-assistant"
   config:
     db:
-      urlSuffix: 'postgresql://{{ .Release.Name }}-postgresql:5432/dai_assistant'
+      urlSuffix: 'postgresql://{{ .Release.Name }}-postgresql:5432/dai-assistant-db'
       username: 'dai-assistant'
       password: 'dai-assistant'
   llm-service-helm-chart:
@@ -2304,6 +2304,6 @@ release-assistant-helm-chart:
       database:
         server: '{{ .Release.Name }}-postgresql'
         port: 5432
-        database: 'dai_llm'
+        database: 'dai-llm-db'
         username: 'dai_llm'
         password: 'dai_llm'
