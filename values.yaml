@@ -912,7 +912,11 @@ dnsPolicy: ""
 dnsConfig: {}
 
 ## @param xlReleaseConfExtra HOCON format configuration that is concatenated to the end of xl-release.conf file
-xlReleaseConfExtra: ""
+xlReleaseConfExtra: |
+  xl.security.scripting.sandbox {
+    allowedJavaClasses = []
+    deniedJavaClasses = []
+  }
 
 ## @section Release runtime parameters
 ##
