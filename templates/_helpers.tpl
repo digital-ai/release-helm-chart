@@ -288,7 +288,7 @@ Get the assistant db name
     {{- if and .Values.external.db.enabled .Values.external.db.assistant.database -}}
         {{- .Values.external.db.assistant.database -}}
     {{- else -}}
-        dai_assistant
+        dai-assistant-db
     {{- end -}}
 {{- end -}}
 
@@ -368,8 +368,8 @@ Get the llm-service db name
 {{- define "release.llmServiceDbName" -}}
     {{- $assistant := index .Values "release-assistant-helm-chart" -}}
     {{- $llm := index $assistant "llm-service-helm-chart" -}}
-    {{- if and $llm $llm.config $llm.config.database $llm.config.database.database -}}
-        {{- $llm.config.database.database -}}
+    {{- if and $llm $llm.config $llm.config.db $llm.config.db.database -}}
+        {{- $llm.config.db.database -}}
     {{- else -}}
         dai-llm-db
     {{- end -}}
@@ -381,10 +381,10 @@ Get the llm-service db username
 {{- define "release.llmServiceUsername" -}}
     {{- $assistant := index .Values "release-assistant-helm-chart" -}}
     {{- $llm := index $assistant "llm-service-helm-chart" -}}
-    {{- if and $llm $llm.config $llm.config.database $llm.config.database.username -}}
-        {{- $llm.config.database.username -}}
+    {{- if and $llm $llm.config $llm.config.db $llm.config.db.username -}}
+        {{- $llm.config.db.username -}}
     {{- else -}}
-        dai_llm
+        dai-llm
     {{- end -}}
 {{- end -}}
 
@@ -394,10 +394,10 @@ Get the llm-service db password
 {{- define "release.llmServicePassword" -}}
     {{- $assistant := index .Values "release-assistant-helm-chart" -}}
     {{- $llm := index $assistant "llm-service-helm-chart" -}}
-    {{- if and $llm $llm.config $llm.config.database $llm.config.database.password -}}
-        {{- $llm.config.database.password -}}
+    {{- if and $llm $llm.config $llm.config.db $llm.config.db.password -}}
+        {{- $llm.config.db.password -}}
     {{- else -}}
-        dai_llm
+        dai-llm
     {{- end -}}
 {{- end -}}
 

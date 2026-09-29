@@ -2301,9 +2301,9 @@ release-assistant-helm-chart:
   llm-service-helm-chart:
     install: false
     config:
-      database:
+      db:
         server: '{{ .Release.Name }}-postgresql'
         port: 5432
         database: 'dai-llm-db'
-        username: 'dai_llm'
-        password: 'dai_llm'
+        username: 'dai-llm'
+        password: 'dai-llm'
