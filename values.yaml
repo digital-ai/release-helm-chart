@@ -912,11 +912,7 @@ dnsPolicy: ""
 dnsConfig: {}
 
 ## @param xlReleaseConfExtra HOCON format configuration that is concatenated to the end of xl-release.conf file
-xlReleaseConfExtra: |
-  xl.security.scripting.sandbox {
-    allowedJavaClasses = []
-    deniedJavaClasses = []
-  }
+xlReleaseConfExtra: ""
 
 ## @section Release runtime parameters
 ##
@@ -929,6 +925,10 @@ jvm:
   options:
     ## @param jvm.options.networkaddress.cache.ttl The Java-level namelookup cache policy for successful lookups: any negative value: caching forever; any positive value: the number of seconds to cache an address for; zero: do not cache
     "networkaddress.cache.ttl": 30
+  ## @param jvm.securityScripting Java classes allowed or denied in the scripting sandbox for jython script tasks.
+  securityScripting:
+    allowedJavaClasses: []
+    deniedJavaClasses: []
 
 ## @param command Override default container command (useful when using custom images)
 ##
@@ -1172,7 +1172,7 @@ configuration:
           enabled = ${XL_METRICS_ENABLED}
         }
 
-        {{- if or .Values.accountLockout.enabled .Values.oidc.enabled }}
+        {{- if or .Values.accountLockout.enabled .Values.oidc.enabled (gt (len .Values.jvm.securityScripting.allowedJavaClasses) 0) (gt (len .Values.jvm.securityScripting.deniedJavaClasses) 0) }}
         security {
           {{- if .Values.accountLockout.enabled }}
           account-lockout {
@@ -1182,6 +1182,12 @@ configuration:
             whitelist-username = {{ .Values.accountLockout.whitelistUsernames | toJson }}
           }
           {{- end }}
+          scripting {
+            sandbox {
+              allowedJavaClasses = {{ .Values.jvm.securityScripting.allowedJavaClasses | toJson }}
+              deniedJavaClasses = {{ .Values.jvm.securityScripting.deniedJavaClasses | toJson }}
+            }
+          }
           {{- if .Values.oidc.enabled }}
           auth {
             providers {
