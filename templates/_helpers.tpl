@@ -350,7 +350,7 @@ Get the assistant db password
 {{- end -}}
 
 {{/*
-Return true when optional LLM Service subchart is installed through Ask Release subchart.
+Return true when optional LLM Service subchart is installed through Release AI Assitant subchart.
 */}}
 {{- define "release.llmServiceEnabled" -}}
     {{- $assistant := index .Values "release-assistant-helm-chart" -}}
@@ -403,7 +403,7 @@ Get the llm-service db password
 
 {{/*
 Return effective AI enablement for Release.
-AI is enabled when explicitly configured or when Ask Release subchart install is enabled.
+AI is enabled when explicitly configured or when Release AI Assitant subchart install is enabled.
 */}}
 {{- define "release.aiEnabled" -}}
     {{- $assistant := index .Values "release-assistant-helm-chart" -}}
@@ -416,7 +416,7 @@ AI is enabled when explicitly configured or when Ask Release subchart install is
 
 {{/*
 Return effective assistant URL for Release.
-Prefer explicit ai.assistantUrl; otherwise derive in-cluster URL when Ask Release subchart is installed.
+Prefer explicit ai.assistantUrl; otherwise derive in-cluster URL when Release AI Assitant subchart is installed.
 */}}
 {{- define "release.assistantUrl" -}}
     {{- $assistant := index .Values "release-assistant-helm-chart" -}}
