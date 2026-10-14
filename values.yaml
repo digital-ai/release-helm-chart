@@ -175,8 +175,8 @@ appHostname: ""
 ##
 appContextRoot: /
 
-## @param ai.enabled Enable Release AI Assitant features in Release
-## @param ai.assistantUrl The URL of the Release AI Assitant service that Release will connect to for AI features. This should be set if ai.enabled is true.
+## @param ai.enabled Enable Release AI Assistant features in Release
+## @param ai.assistantUrl The URL of the Release AI Assistant service that Release will connect to for AI features. This should be set if ai.enabled is true.
 ai:
   enabled: false
   assistantUrl: ""
@@ -548,13 +548,13 @@ external:
       ## @param external.db.report.maxPoolSize Report database max pool size for Release
       maxPoolSize: ""
     assistant:
-      ## @param external.db.assistant.url Assistant database URL for Release AI Assitant
+      ## @param external.db.assistant.url Assistant database URL for Release AI Assistant
       url: ""
-      ## @param external.db.assistant.database Assistant database name for Release AI Assitant
+      ## @param external.db.assistant.database Assistant database name for Release AI Assistant
       database: dai-assistant-db
-      ## @param external.db.assistant.username Assistant database username for Release AI Assitant
+      ## @param external.db.assistant.username Assistant database username for Release AI Assistant
       username:
-      ## @param external.db.assistant.password Assistant database password for Release AI Assitant
+      ## @param external.db.assistant.password Assistant database password for Release AI Assistant
       password:
 
 ## @section Release keystore and truststore parameters
